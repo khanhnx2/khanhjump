@@ -1,4 +1,6 @@
-const CACHE_NAME = 'khanh-jump-android-v28';
+// CACHE_NAME's version segment is patched with a content hash at build time
+// (scripts/prepare-android-web-assets.js) so every code change auto-busts the cache.
+const CACHE_NAME = 'khanh-jump-android-__CACHE_VERSION__';
 const APP_SHELL = [
   './',
   './index.html',
