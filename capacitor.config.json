@@ -1,0 +1,14 @@
+{
+  "appId": "com.example.geometrydash",
+  "appName": "Khanh Jump",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false,
+    "scrollEnabled": false,
+    "backgroundColor": "#0b1030"
+  },
+  "server": {
+    "iosScheme": "capacitor"
+  }
+}

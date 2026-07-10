@@ -1,0 +1,117 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #0b1030;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#game {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+#hud {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+#progress-track {
+  width: min(40vw, 400px);
+  height: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+#progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00e5ff, #6cff9e);
+}
+
+#progress-percent {
+  color: #fff;
+  font-size: 13px;
+  min-width: 38px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+#mute-btn {
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  font-size: 16px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 4px 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#attempt-label {
+  position: fixed;
+  top: 18%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #fff;
+  font-size: clamp(20px, 4vw, 36px);
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+#attempt-label.hidden {
+  display: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #fff;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay h1 {
+  font-size: clamp(28px, 6vw, 64px);
+  letter-spacing: 4px;
+}
+
+.overlay p {
+  font-size: clamp(14px, 2.5vw, 22px);
+  opacity: 0.85;
+}

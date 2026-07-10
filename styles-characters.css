@@ -1,0 +1,98 @@
+.character-select {
+  display: grid;
+  gap: 10px;
+  width: min(92vw, 520px);
+  pointer-events: auto;
+}
+
+.character-select.hidden {
+  display: none;
+}
+
+.character-list {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 2px;
+  touch-action: pan-x;
+}
+
+.character-option {
+  display: grid;
+  grid-template-rows: 64px auto;
+  justify-items: center;
+  gap: 8px;
+  min-width: 92px;
+  padding: 10px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.38);
+  border-radius: 8px;
+  background: rgba(7, 12, 38, 0.72);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.character-option.active {
+  border-color: #6cff9e;
+  background: rgba(0, 229, 255, 0.2);
+}
+
+.character-option img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: 6px;
+}
+
+.character-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.character-action {
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 2px solid rgba(255, 255, 255, 0.34);
+  border-radius: 8px;
+  background: rgba(7, 12, 38, 0.76);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.character-file-input {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .character-select {
+    gap: 8px;
+  }
+
+  .character-list {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .character-option {
+    min-width: 78px;
+    grid-template-rows: 54px auto;
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .character-option img {
+    width: 54px;
+    height: 54px;
+  }
+}

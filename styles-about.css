@@ -1,0 +1,75 @@
+#about-btn {
+  pointer-events: auto;
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 2px solid rgba(255, 255, 255, 0.34);
+  border-radius: 8px;
+  background: rgba(7, 12, 38, 0.76);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#about-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  background: rgba(5, 8, 24, 0.92);
+  color: #fff;
+  pointer-events: auto;
+}
+
+#about-overlay.hidden {
+  display: none;
+}
+
+.about-panel {
+  width: min(92vw, 420px);
+  padding: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  background: rgba(7, 12, 38, 0.88);
+  text-align: center;
+}
+
+.about-panel h2 {
+  margin-bottom: 12px;
+  font-size: clamp(24px, 6vw, 34px);
+}
+
+.about-panel p {
+  margin: 8px 0;
+  font-size: clamp(15px, 4vw, 18px);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.about-panel a {
+  color: #6cff9e;
+  font-weight: 800;
+  text-decoration: none;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+#about-close-btn {
+  min-height: 40px;
+  margin-top: 14px;
+  padding: 8px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.38);
+  border-radius: 8px;
+  background: rgba(0, 229, 255, 0.18);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}

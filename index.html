@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0b1030">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Khanh Jump">
+  <title>Khanh Jump</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/android-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-characters.css">
+  <link rel="stylesheet" href="styles-leaderboard.css">
+  <link rel="stylesheet" href="styles-powerups.css">
+  <link rel="stylesheet" href="styles-matching.css">
+  <link rel="stylesheet" href="styles-about.css">
+  <link rel="stylesheet" href="styles-landscape.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="hud">
+    <div id="heart-bar" aria-label="Hearts"></div>
+    <div id="progress-track"><div id="progress-fill"></div></div>
+    <span id="progress-percent">0%</span>
+    <button id="mute-btn" type="button" aria-label="Toggle sound">🔊</button>
+  </div>
+  <div id="attempt-label" class="hidden">Attempt 1</div>
+  <div id="message-overlay" class="overlay">
+    <h1 id="message-title">KHANH JUMP</h1>
+    <div id="character-select" class="character-select" aria-label="Choose character"></div>
+    <section id="top-ten-panel" class="top-ten-panel" aria-label="Top ten scores">
+      <h2>Top Ten</h2>
+      <ol id="top-ten-list"></ol>
+    </section>
+    <button id="about-btn" type="button">About me</button>
+    <p id="message-text">Tap to start</p>
+  </div>
+  <div id="about-overlay" class="hidden" aria-label="About me">
+    <section class="about-panel">
+      <h2>About me</h2>
+      <p>Nguyễn Xuân Khánh - Anthony Nguyen</p>
+      <p>nguyenkhanhvietnam@gmail.com</p>
+      <p>0936028098</p>
+      <p><a href="https://vibeconex.com" target="_blank" rel="noopener">https://vibeconex.com</a></p>
+      <button id="about-close-btn" type="button">Close</button>
+    </section>
+  </div>
+  <div id="matching-overlay" class="hidden" aria-label="English matching game">
+    <section class="matching-panel">
+      <div class="matching-header">
+        <h2>English Match</h2>
+        <div id="matching-status">0/6</div>
+      </div>
+      <div id="matching-board"></div>
+    </section>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

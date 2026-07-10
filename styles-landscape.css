@@ -1,0 +1,123 @@
+@media (orientation: landscape) {
+  #hud {
+    top: max(8px, env(safe-area-inset-top));
+    gap: 8px;
+  }
+
+  #progress-track {
+    width: min(36vw, 360px);
+  }
+
+  #mute-btn {
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 14px;
+  }
+
+  #attempt-label {
+    top: 12%;
+    font-size: clamp(18px, 6vh, 30px);
+  }
+
+  .overlay {
+    justify-content: flex-start;
+    gap: 8px;
+    padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    overflow: hidden;
+  }
+
+  .overlay h1 {
+    font-size: clamp(22px, 9vh, 42px);
+    letter-spacing: 2px;
+  }
+
+  .overlay p {
+    font-size: clamp(12px, 4vh, 18px);
+  }
+
+  .character-select {
+    gap: 8px;
+    width: min(58vw, 430px);
+  }
+
+  .character-list {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .character-option {
+    grid-template-rows: 42px auto;
+    min-width: 76px;
+    padding: 6px 8px;
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .character-option img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .character-actions {
+    gap: 6px;
+  }
+
+  .character-action {
+    min-height: 32px;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .top-ten-panel {
+    width: min(58vw, 520px);
+    max-height: 34vh;
+    padding: 8px 10px;
+  }
+
+  .top-ten-panel h2 {
+    margin-bottom: 4px;
+    font-size: clamp(14px, 4vh, 20px);
+  }
+
+  #top-ten-list {
+    max-height: calc(34vh - 38px);
+  }
+
+  #top-ten-list li {
+    font-size: clamp(11px, 3.2vh, 14px);
+  }
+
+  #heart-bar {
+    top: max(48px, calc(env(safe-area-inset-top) + 48px));
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  #about-btn {
+    min-height: 32px;
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .about-panel {
+    width: min(70vw, 460px);
+    padding: 12px;
+  }
+
+  .about-panel h2 {
+    margin-bottom: 8px;
+    font-size: clamp(20px, 7vh, 30px);
+  }
+
+  .about-panel p {
+    margin: 5px 0;
+    font-size: clamp(13px, 4vh, 17px);
+  }
+
+  #about-close-btn {
+    min-height: 34px;
+    margin-top: 10px;
+    padding: 6px 14px;
+  }
+}

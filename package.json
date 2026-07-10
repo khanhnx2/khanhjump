@@ -1,0 +1,24 @@
+{
+  "name": "khanh-jump",
+  "version": "1.0.0",
+  "main": "service-worker.js",
+  "scripts": {
+    "prepare:android": "node scripts/prepare-android-web-assets.js",
+    "sync:android": "npm run prepare:android && npx cap sync android",
+    "build:android": "npm run sync:android && cd android && ./gradlew assembleDebug",
+    "sync:ios": "npm run prepare:android && npx cap sync ios",
+    "build:ios": "npm run sync:ios && cd ios/App && xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'generic/platform=iOS' build",
+    "open:ios": "npx cap open ios",
+    "test": "node --check service-worker.js && node --check js/*.js && python3 -m json.tool manifest.webmanifest > /dev/null"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/ios": "^6.2.1"
+  }
+}
