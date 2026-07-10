@@ -80,13 +80,25 @@ export class PlayerCube {
     }
   }
 
-  draw(ctx, view) {
+  draw(ctx, view, shieldActive = false) {
     const sx = view.worldToScreenX(this.x);
     const sy = view.worldToScreenY(this.y);
     const size = TILE;
 
     ctx.save();
     ctx.translate(sx + size / 2, sy - size / 2);
+
+    if (shieldActive) {
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 120);
+      ctx.save();
+      ctx.strokeStyle = `rgba(120, 230, 255, ${0.4 + pulse * 0.4})`;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 0.75, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
     ctx.rotate(this.rotation);
 
     if (this.flashTimer > 0 && Math.floor(this.flashTimer * 18) % 2 === 0) {

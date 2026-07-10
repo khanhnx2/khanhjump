@@ -46,8 +46,10 @@ The start screen includes an About me screen with creator contact information an
 ## Power Ups
 
 - Wings enable hold-to-fly for `3` seconds.
-- Gun auto-fires for `3` seconds.
-- Gun fires `1` shot every `0.5` seconds, for `6` shots total.
+- If the fly timer runs out while the player is still airborne, they get `2` seconds of invincibility while falling back down — obstacles are ignored entirely (no damage, no landing) during this window, shown with a pulsing cyan shield ring around the player.
+- Gun auto-fires for `2.5` seconds.
+- Gun fires `1` shot every `0.25` seconds, for `10` shots total.
+- All pickups (wings, gun, father, khôi, nguyên) only collect while the player is airborne (mid-jump); walking through them on the ground does not collect them.
 
 ## Scoring
 

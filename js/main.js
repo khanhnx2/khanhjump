@@ -149,7 +149,7 @@ function render() {
   drawFinishLine(ctx, game.level.length, view);
 
   if (game.state !== 'dead') {
-    game.player.draw(ctx, view);
+    game.player.draw(ctx, view, game.invincibleTimer > 0);
   }
 
   particles.draw(ctx, view);

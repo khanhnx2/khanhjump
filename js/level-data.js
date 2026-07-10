@@ -3,13 +3,13 @@
 export const LEVEL_COUNT = 10;
 
 const BASE_PICKUPS = [
-  { type: 'wings', x: 74, y: 0.8 },
-  { type: 'father', x: 116, y: 0.8 },
-  { type: 'gun', x: 148, y: 0.8 },
-  { type: 'khoi', x: 206, y: 0.8 },
-  { type: 'wings', x: 268, y: 0.8 },
-  { type: 'nguyen', x: 296, y: 0.8 },
-  { type: 'gun', x: 316, y: 0.8 },
+  { type: 'wings', x: 74, y: 1.2 },
+  { type: 'father', x: 116, y: 1.2 },
+  { type: 'gun', x: 148, y: 1.2 },
+  { type: 'khoi', x: 206, y: 1.2 },
+  { type: 'wings', x: 268, y: 1.2 },
+  { type: 'nguyen', x: 296, y: 1.2 },
+  { type: 'gun', x: 316, y: 1.2 },
 ];
 
 const BASE_OBSTACLES = [
@@ -69,8 +69,8 @@ function buildLevel(number) {
 function makePickups(number, length) {
   const shift = Math.min(18, (number - 1) * 2);
   const pickups = BASE_PICKUPS.map((pickup) => ({ ...pickup, x: pickup.x + shift }));
-  if (number >= 4) pickups.push({ type: 'father', x: length - 58, y: 0.8 });
-  if (number >= 7) pickups.push({ type: 'gun', x: length - 38, y: 0.8 });
+  if (number >= 4) pickups.push({ type: 'father', x: length - 58, y: 1.2 });
+  if (number >= 7) pickups.push({ type: 'gun', x: length - 38, y: 1.2 });
   return pickups.sort((a, b) => a.x - b.x);
 }
 

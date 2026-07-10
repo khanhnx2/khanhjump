@@ -5,8 +5,9 @@ import { findProjectileHit } from './projectile-collision.js';
 
 // State machine: ready → playing → dead/win → playing
 const FLY_SECONDS = 3;
-const AUTO_FIRE_SECONDS = 3;
-const AUTO_FIRE_INTERVAL = 0.5;
+const POST_FLY_INVINCIBLE_SECONDS = 2;
+const AUTO_FIRE_SECONDS = 2.5;
+const AUTO_FIRE_INTERVAL = 0.25;
 const MAX_AMMO = AUTO_FIRE_SECONDS / AUTO_FIRE_INTERVAL;
 const START_HEARTS = 10;
 const MAX_HEARTS = 10;
@@ -26,6 +27,7 @@ export class GameState {
     this.autoFireTimer = 0;
     this.hearts = START_HEARTS;
     this.flyTimer = 0;
+    this.invincibleTimer = 0;
     this.levelIndex = 0;
     this.level = levels[this.levelIndex];
     this.obstacles = [];
@@ -102,6 +104,7 @@ export class GameState {
     this.autoFireTimer = 0;
     this.hearts = START_HEARTS;
     this.flyTimer = 0;
+    this.invincibleTimer = 0;
     this.projectiles = [];
     this.resetLevelObjects();
     this.state = 'playing';
@@ -126,14 +129,21 @@ export class GameState {
   update(dt) {
     if (this.state !== 'playing') return;
     this.elapsedSeconds += dt;
+    const wasFlying = this.flyTimer > 0;
     this.flyTimer = Math.max(0, this.flyTimer - dt);
+    this.invincibleTimer = Math.max(0, this.invincibleTimer - dt);
     this.updateAutoFire(dt);
     const prevBottom = this.player.y;
     this.player.update(dt, this.inputHeld, this.flyTimer > 0);
+    if (wasFlying && this.flyTimer <= 0 && !this.player.grounded) {
+      this.invincibleTimer = POST_FLY_INVINCIBLE_SECONDS;
+    }
     this.collectPickups();
     this.updateProjectiles(dt);
-    const hitObstacle = resolveCollisions(this.player, prevBottom, this.obstacles);
-    if (hitObstacle) this.takeDamage(hitObstacle);
+    if (this.invincibleTimer <= 0) {
+      const hitObstacle = resolveCollisions(this.player, prevBottom, this.obstacles);
+      if (hitObstacle) this.takeDamage(hitObstacle);
+    }
     if (this.state === 'dead') return;
     if (this.player.x >= this.level.length) {
       this.state = 'win';
