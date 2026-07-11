@@ -1,9 +1,9 @@
-// Physics constants in tile units. Tuned so a jump clears ~2 tiles high
-// and travels ~3.5 tiles horizontally at scroll speed (Geometry Dash 1x feel).
+// Physics constants in tile units. Tuned so a jump clears ~3.1 tiles high
+// and travels ~4.1 tiles horizontally at scroll speed (Geometry Dash 1x feel).
 export const TILE = 40;              // pixels per tile at render time
 export const SCROLL_SPEED = 10.4;    // tiles/second
-export const JUMP_VELOCITY = 25.2;   // tiles/second (upward) → apex ~2.0 tiles
-export const GRAVITY = 159.0;        // tiles/second^2 → horizontal ~3.3 tiles
+export const JUMP_VELOCITY = 31.5;   // tiles/second (upward) → apex ~3.1 tiles
+export const GRAVITY = 159.0;        // tiles/second^2 → horizontal ~4.1 tiles
 const FLY_ACCELERATION = 92.0;
 const FLY_MAX_UP = 12.5;
 const FLY_MAX_DOWN = -13.5;
