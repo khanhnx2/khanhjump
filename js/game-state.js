@@ -140,9 +140,10 @@ export class GameState {
     }
     this.collectPickups();
     this.updateProjectiles(dt);
-    if (this.invincibleTimer <= 0) {
-      const hitObstacle = resolveCollisions(this.player, prevBottom, this.obstacles);
-      if (hitObstacle) this.takeDamage(hitObstacle);
+    const hitObstacle = resolveCollisions(this.player, prevBottom, this.obstacles);
+    if (hitObstacle) {
+      if (this.invincibleTimer > 0) this.destroyObstacle(hitObstacle);
+      else this.takeDamage(hitObstacle);
     }
     if (this.state === 'dead') return;
     if (this.player.x >= this.level.length) {
@@ -171,9 +172,12 @@ export class GameState {
       }
     }
   }
-  takeDamage(obstacle) {
+  destroyObstacle(obstacle) {
     obstacle.destroyed = true;
     this.obstacles = this.obstacles.filter((item) => !item.destroyed);
+  }
+  takeDamage(obstacle) {
+    this.destroyObstacle(obstacle);
     this.hearts = Math.max(0, this.hearts - 1);
     this.player.flash();
     this.emit('damage');
