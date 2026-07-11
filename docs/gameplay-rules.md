@@ -49,7 +49,8 @@ The start screen includes an About me screen with creator contact information an
 - If the fly timer runs out while the player is still airborne, they get `2` seconds of invincibility while falling back down, shown with a pulsing cyan shield ring around the player. Landing on blocks still works normally; hitting a spike/block/ceiling-spike during this window destroys it silently instead of costing a heart.
 - Gun auto-fires for `2.5` seconds.
 - Gun fires `1` shot every `0.25` seconds, for `10` shots total.
-- All pickups (wings, gun, father, khôi, nguyên) only collect while the player is airborne (mid-jump); walking through them on the ground does not collect them.
+- Shield pickup grants `3` seconds of invincibility immediately (same effect as the post-fly shield: obstacles destroyed silently on contact, no heart lost).
+- All pickups (wings, gun, shield, father, khôi, nguyên) only collect while the player is airborne (mid-jump); walking through them on the ground does not collect them.
 
 ## Scoring
 

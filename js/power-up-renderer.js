@@ -18,6 +18,7 @@ export function drawPickups(ctx, pickups, view) {
     const sy = view.worldToScreenY(pickup.y);
     if (pickup.type === 'wings') drawWings(ctx, sx, sy);
     if (pickup.type === 'gun') drawGun(ctx, sx, sy);
+    if (pickup.type === 'shield') drawShield(ctx, sx, sy);
     if (characterImages[pickup.type]) drawCharacter(ctx, sx, sy, characterImages[pickup.type]);
   }
 }
@@ -68,6 +69,29 @@ function drawGun(ctx, sx, sy) {
   ctx.fillRect(-4, 5, 7, 14);
   ctx.fillStyle = '#00e5ff';
   ctx.fillRect(-13, -4, 10, 6);
+  ctx.restore();
+}
+
+function drawShield(ctx, sx, sy) {
+  ctx.save();
+  ctx.translate(sx + TILE / 2, sy - TILE / 2);
+  ctx.beginPath();
+  ctx.moveTo(0, -16);
+  ctx.lineTo(14, -10);
+  ctx.lineTo(14, 4);
+  ctx.quadraticCurveTo(14, 16, 0, 20);
+  ctx.quadraticCurveTo(-14, 16, -14, 4);
+  ctx.lineTo(-14, -10);
+  ctx.closePath();
+  ctx.fillStyle = '#0ea5c4';
+  ctx.fill();
+  ctx.strokeStyle = '#bdf4ff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = '#bdf4ff';
+  ctx.beginPath();
+  ctx.arc(0, 0, 5, 0, Math.PI * 2);
+  ctx.fill();
   ctx.restore();
 }
 

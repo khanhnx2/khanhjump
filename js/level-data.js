@@ -6,10 +6,12 @@ const BASE_PICKUPS = [
   { type: 'wings', x: 74, y: 1.2 },
   { type: 'father', x: 116, y: 1.2 },
   { type: 'gun', x: 148, y: 1.2 },
+  { type: 'shield', x: 160, y: 1.2 },
   { type: 'khoi', x: 206, y: 1.2 },
   { type: 'wings', x: 268, y: 1.2 },
   { type: 'nguyen', x: 296, y: 1.2 },
   { type: 'gun', x: 316, y: 1.2 },
+  { type: 'shield', x: 340, y: 1.2 },
 ];
 
 const BASE_OBSTACLES = [

@@ -6,6 +6,7 @@ import { findProjectileHit } from './projectile-collision.js';
 // State machine: ready → playing → dead/win → playing
 const FLY_SECONDS = 3;
 const POST_FLY_INVINCIBLE_SECONDS = 2;
+const SHIELD_SECONDS = 3;
 const AUTO_FIRE_SECONDS = 2.5;
 const AUTO_FIRE_INTERVAL = 0.25;
 const MAX_AMMO = AUTO_FIRE_SECONDS / AUTO_FIRE_INTERVAL;
@@ -160,6 +161,7 @@ export class GameState {
       if (this.player.y < pickup.y + 1 && this.player.y + 1 > pickup.y) {
         pickup.collected = true;
         if (pickup.type === 'wings') this.flyTimer = FLY_SECONDS;
+        if (pickup.type === 'shield') this.invincibleTimer = SHIELD_SECONDS;
         if (pickup.type === 'gun') {
           this.ammo = MAX_AMMO;
           this.autoFireTimer = 0;
