@@ -14,6 +14,8 @@ export class AudioManager {
     game.on('start', () => this.playFromStart());
     game.on('restart', () => this.playFromStart());
     game.on('damage', () => this.playDamageAlert());
+    game.on('bossStart', () => this.playBossAlert());
+    game.on('bossDefeated', () => this.playBossDefeat());
     game.on('death', () => this.pause());
     game.on('win', () => this.pause());
   }
@@ -40,6 +42,27 @@ export class AudioManager {
     const now = this.context.currentTime;
     this.playTone(220, now, 0.1, 'sawtooth', 0.2);
     this.playTone(146.83, now + 0.12, 0.16, 'square', 0.16);
+  }
+
+  // Menacing low two-tone sting when a boss appears.
+  playBossAlert() {
+    this.ensureContext();
+    if (!this.context || this.muted) return;
+
+    const now = this.context.currentTime;
+    this.playTone(110, now, 0.22, 'sawtooth', 0.2);
+    this.playTone(116.54, now + 0.24, 0.3, 'sawtooth', 0.22);
+  }
+
+  // Rising arpeggio when a boss goes down.
+  playBossDefeat() {
+    this.ensureContext();
+    if (!this.context || this.muted) return;
+
+    const now = this.context.currentTime;
+    this.playTone(392.0, now, 0.1, 'square', 0.16);
+    this.playTone(523.25, now + 0.1, 0.1, 'square', 0.16);
+    this.playTone(659.25, now + 0.2, 0.18, 'square', 0.18);
   }
 
   toggleMute() {

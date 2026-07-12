@@ -1,4 +1,7 @@
-// DOM-based HUD: progress bar (top center), attempt counter, mute button.
+// DOM-based HUD: progress bar (top center), attempt counter, mute button,
+// boss HP label during boss fights.
+
+import { BOSS_LABELS } from './boss-level-data.js';
 
 export class Hud {
   constructor(game, audio) {
@@ -8,6 +11,7 @@ export class Hud {
     this.percent = document.getElementById('progress-percent');
     this.attemptLabel = document.getElementById('attempt-label');
     this.heartBar = document.getElementById('heart-bar');
+    this.bossHp = document.getElementById('boss-hp');
     this.muteBtn = document.getElementById('mute-btn');
 
     this.attemptTimer = 0;
@@ -38,6 +42,7 @@ export class Hud {
     this.bar.style.width = `${pct}%`;
     this.percent.textContent = `${pct}%`;
     this.updateHearts();
+    this.updateBossHp();
 
     if (this.attemptTimer > 0) {
       this.attemptTimer -= dt;
@@ -47,5 +52,15 @@ export class Hud {
 
   updateHearts() {
     this.heartBar.textContent = '♥'.repeat(this.game.hearts);
+  }
+
+  updateBossHp() {
+    const boss = this.game.state === 'boss' && this.game.bossFight && this.game.bossFight.boss;
+    if (!boss) {
+      this.bossHp.classList.add('hidden');
+      return;
+    }
+    this.bossHp.classList.remove('hidden');
+    this.bossHp.textContent = `${BOSS_LABELS[boss.key]} ♥ ${boss.hp}/${boss.maxHp}`;
   }
 }

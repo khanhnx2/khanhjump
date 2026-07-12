@@ -2,6 +2,7 @@ import { PlayerCube } from './player-cube.js';
 import { levels } from './level-data.js';
 import { resolveCollisions } from './collision-detection.js';
 import { findProjectileHit } from './projectile-collision.js';
+import { BossFight } from './boss-fight-state.js';
 
 // State machine: ready → playing → dead/win → playing
 const FLY_SECONDS = 3;
@@ -16,6 +17,7 @@ const PROJECTILE_SPEED = 22;
 const PROJECTILE_RADIUS = 0.18;
 const HEART_PICKUPS = { father: 2, khoi: 1, nguyen: 1 };
 const MATCHING_RANDOM_RANGE = 3;
+const BOSS_PLAYER_FIRE_INTERVAL = 0.5;
 
 export class GameState {
   constructor() {
@@ -34,7 +36,9 @@ export class GameState {
     this.obstacles = [];
     this.pickups = [];
     this.projectiles = [];
-    this.listeners = { damage: [], death: [], restart: [], win: [], start: [], powerup: [], health: [], matchRequired: [] };
+    this.bossFight = null;
+    this.bossFireTimer = 0;
+    this.listeners = { damage: [], death: [], restart: [], win: [], start: [], powerup: [], health: [], matchRequired: [], bossStart: [], bossDefeated: [] };
     this.resetLevelObjects();
     this.bindInput();
   }
@@ -47,6 +51,7 @@ export class GameState {
   setLevel(levelNumber) {
     this.levelIndex = Math.max(0, Math.min(levels.length - 1, levelNumber - 1));
     this.level = levels[this.levelIndex];
+    this.bossFight = null;
     this.player.reset();
     this.elapsedSeconds = 0;
     this.resetLevelObjects();
@@ -75,7 +80,7 @@ export class GameState {
   handlePress() {
     if (this.state === 'ready' || this.state === 'win' || this.state === 'dead') {
       this.requestRunStart();
-    } else if (this.state === 'playing') {
+    } else if (this.state === 'playing' || this.state === 'boss') {
       this.player.jump();
     }
   }
@@ -107,6 +112,8 @@ export class GameState {
     this.flyTimer = 0;
     this.invincibleTimer = 0;
     this.projectiles = [];
+    this.bossFight = null;
+    this.bossFireTimer = 0;
     this.resetLevelObjects();
     this.state = 'playing';
     this.emit('health');
@@ -128,6 +135,7 @@ export class GameState {
     this.attempts += 1;
   }
   update(dt) {
+    if (this.state === 'boss') return this.updateBossFight(dt);
     if (this.state !== 'playing') return;
     this.elapsedSeconds += dt;
     const wasFlying = this.flyTimer > 0;
@@ -148,9 +156,43 @@ export class GameState {
     }
     if (this.state === 'dead') return;
     if (this.player.x >= this.level.length) {
-      this.state = 'win';
-      this.emit('win');
+      if (this.level.bossSequence && this.level.bossSequence.length) this.enterBossFight();
+      else this.winLevel();
     }
+  }
+  winLevel() {
+    this.state = 'win';
+    this.emit('win');
+  }
+  enterBossFight() {
+    // The duel starts clean: any leftover run power-ups are dropped.
+    this.flyTimer = 0;
+    this.invincibleTimer = 0;
+    this.ammo = 0;
+    this.projectiles = [];
+    this.bossFireTimer = BOSS_PLAYER_FIRE_INTERVAL;
+    this.bossFight = new BossFight(this.level.bossSequence, this.player.x);
+    this.state = 'boss';
+    this.emit('bossStart');
+  }
+  updateBossFight(dt) {
+    this.elapsedSeconds += dt;
+    this.player.update(dt, this.inputHeld, false, true);
+    this.bossFireTimer -= dt;
+    if (this.bossFireTimer <= 0) {
+      this.bossFireTimer += BOSS_PLAYER_FIRE_INTERVAL;
+      this.bossFight.shootFromPlayer(this.player);
+    }
+    this.bossFight.update(dt, this.player);
+    if (this.bossFight.bossDefeated) this.emit('bossDefeated');
+    if (this.bossFight.playerHit) {
+      this.hearts = Math.max(0, this.hearts - 1);
+      this.player.flash();
+      this.emit('damage');
+      this.emit('health');
+      if (this.hearts <= 0) return this.die();
+    }
+    if (this.bossFight.done) this.winLevel();
   }
   get progress() {
     return Math.min(1, Math.max(0, this.player.x / this.level.length));

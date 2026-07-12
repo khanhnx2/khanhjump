@@ -1,6 +1,9 @@
 // Level data uses tile units. y = 0 is the floor; ceiling spikes use y as top edge.
 
-export const LEVEL_COUNT = 10;
+import { getBossSequence } from './boss-level-data.js';
+
+export const LEVEL_COUNT = 20;
+const LAYOUT_COUNT = 10; // levels 11-20 reuse layouts 1-10 and add a boss fight
 
 const BASE_PICKUPS = [
   { type: 'wings', x: 74, y: 1.2 },
@@ -53,7 +56,13 @@ const BASE_OBSTACLES = [
   { type: 'spike', x: 358, y: 0 },
 ];
 
-export const levels = Array.from({ length: LEVEL_COUNT }, (_, index) => buildLevel(index + 1));
+export const levels = Array.from({ length: LEVEL_COUNT }, (_, index) => {
+  const number = index + 1;
+  // Layout repeats every 10 levels; GameState deep-copies obstacles/pickups per
+  // run, so sharing layout arrays between level N and N+10 is safe.
+  const layout = buildLevel(((number - 1) % LAYOUT_COUNT) + 1);
+  return { ...layout, number, bossSequence: getBossSequence(number) };
+});
 export const level = levels[0];
 
 function buildLevel(number) {

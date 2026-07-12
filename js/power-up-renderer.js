@@ -1,6 +1,6 @@
 import { TILE } from './player-cube.js';
 
-const characterImages = {
+export const characterImages = {
   father: loadImage('assets/characters/player-father.png'),
   khoi: loadImage('assets/characters/player-khoi.png'),
   nguyen: loadImage('assets/characters/player-nguyen.png')

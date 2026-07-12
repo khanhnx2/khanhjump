@@ -7,12 +7,13 @@ The start screen includes an About me screen with creator contact information an
 
 ## Levels
 
-- The game has `10` levels.
+- The game has `20` levels.
+- Levels `11-20` reuse the exact map layouts of levels `1-10` (11=1, 12=2, … 20=10) and add a boss fight at the finish line.
 - Father, Khôi, and Nguyên each store their own current level.
 - Custom characters also store their own current level.
 - Character name and avatar can be changed from the start screen.
 - New characters can be added, and existing characters can be deleted.
-- Clearing a level unlocks the next level for that character, up to level `10`.
+- Clearing a level unlocks the next level for that character, up to level `20`.
 
 ## Start Gate
 
@@ -27,9 +28,35 @@ The start screen includes an About me screen with creator contact information an
 - The runner starts only after all `6` pairs are matched.
 - The word bank has `200` beginner nouns and `50` beginner verbs.
 
+## Boss Levels (11-20)
+
+- Reaching the finish line on levels `11-20` starts a boss fight instead of an instant win.
+- The player stops running, stands in place, and can only jump.
+- The player auto-fires `1` bullet every `0.5` seconds with infinite ammo (separate from the gun pickup).
+- Bullets from both sides fly at ground height; a target that is mid-jump dodges the bullet.
+- Each boss bullet that hits removes `1` heart. Hearts carry over from the run (no reset at the boss).
+- Each player bullet that hits removes `1` boss heart.
+- Bosses stand still `6` tiles ahead and every `0.5` seconds roll `random(2)`; on `1` they jump in place.
+- Bosses are dark-tinted versions of the Nguyên, Khôi, and Father avatars; Big variants are `1.5x` size.
+- Bosses appear one at a time; killing one spawns the next in the queue. Beating the last boss wins the level.
+- Losing all hearts during a boss fight restarts the whole level from the beginning.
+
+| Level | Bosses (in order) |
+|---|---|
+| 11 | Black Nguyên (10 hearts, shoots every 2s) |
+| 12 | Black Khôi (20 hearts, every 1.5s) |
+| 13 | Black Father (30 hearts, every 1s) |
+| 14 | Black Nguyên → Black Khôi |
+| 15 | Black Nguyên → Black Father |
+| 16 | Black Khôi → Black Father |
+| 17 | Black Nguyên → Black Khôi → Black Father |
+| 18 | Black Nguyên → Big Black Nguyên (15 hearts, every 1.5s) |
+| 19 | Black Khôi → Big Black Khôi (25 hearts, every 1s) |
+| 20 | Black Father → Big Black Father (40 hearts, every 0.5s) |
+
 ## Win And Lose
 
-- Win when `player.x >= currentLevel.length`.
+- Win when `player.x >= currentLevel.length` (levels 1-10), or after defeating every boss (levels 11-20).
 - Lose only when hearts reach `0`.
 - Colliding with an obstacle removes `1` heart and destroys that obstacle.
 - Flying high into ceiling spikes also removes `1` heart.

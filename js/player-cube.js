@@ -42,8 +42,9 @@ export class PlayerCube {
   }
 
   // inputHeld enables GD-style hold-to-rejump, or hold-to-fly with wings.
-  update(dt, inputHeld, canFly = false) {
-    this.x += SCROLL_SPEED * dt;
+  // lockedX freezes horizontal motion during boss fights (jump physics stay live).
+  update(dt, inputHeld, canFly = false, lockedX = false) {
+    if (!lockedX) this.x += SCROLL_SPEED * dt;
     this.flashTimer = Math.max(0, this.flashTimer - dt);
 
     if (canFly && inputHeld) {

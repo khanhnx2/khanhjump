@@ -2,6 +2,7 @@ import { TILE, setPlayerFace } from './player-cube.js';
 import { GameState } from './game-state.js';
 import { drawObstacles, drawFinishLine } from './obstacle-renderer.js';
 import { drawPickups, drawProjectiles } from './power-up-renderer.js';
+import { drawBoss, drawBossBullets } from './boss-renderer.js';
 import { drawBackground, drawFloor } from './background-parallax.js';
 import { ParticleSystem } from './particle-effects.js';
 import { Hud } from './hud-progress.js';
@@ -124,6 +125,11 @@ game.on('win', () => {
 game.on('restart', () => {
   overlay.classList.add('hidden');
 });
+game.on('bossDefeated', () => {
+  const boss = game.bossFight && game.bossFight.defeatedBoss;
+  // burst() centers a 1-tile cube; offset so the burst sits at the boss's center.
+  if (boss) particles.burst(boss.x + (boss.scale - 1) / 2, boss.y + (boss.scale - 1) / 2);
+});
 game.on('death', () => {
   leaderboard.record({
     character: selectedCharacter.name,
@@ -148,6 +154,12 @@ function render() {
   drawProjectiles(ctx, game.projectiles, view);
   drawFinishLine(ctx, game.level.length, view);
 
+  if (game.state === 'boss' && game.bossFight) {
+    drawBoss(ctx, game.bossFight.boss, view);
+    drawBossBullets(ctx, game.bossFight.bossBullets, view);
+    drawProjectiles(ctx, game.bossFight.playerBullets, view);
+  }
+
   if (game.state !== 'dead') {
     game.player.draw(ctx, view, game.invincibleTimer > 0);
   }
@@ -163,7 +175,9 @@ function frame(now) {
   lastTime = now;
 
   game.update(dt);
-  view.cameraX = game.player.x;
+  // Shift the camera right during boss fights so the boss (6 tiles ahead,
+  // up to 1.5 tiles wide) stays on-screen even on narrow phone viewports.
+  view.cameraX = game.player.x + (game.state === 'boss' ? 1.5 : 0);
 
   if (game.state === 'playing') {
     particles.emitTrail(dt, game.player);
