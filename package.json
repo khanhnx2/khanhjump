@@ -9,7 +9,7 @@
     "sync:ios": "npm run prepare:android && npx cap sync ios",
     "build:ios": "npm run sync:ios && cd ios/App && xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'generic/platform=iOS' build",
     "open:ios": "npx cap open ios",
-    "test": "node --check service-worker.js && node --check js/*.js && python3 -m json.tool manifest.webmanifest > /dev/null"
+    "test": "node --check service-worker.js && for f in js/*.js; do node --check \"$f\" || exit 1; done && python3 -m json.tool manifest.webmanifest > /dev/null"
   },
   "keywords": [],
   "author": "",

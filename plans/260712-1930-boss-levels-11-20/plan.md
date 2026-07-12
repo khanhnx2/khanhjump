@@ -4,7 +4,7 @@ description: >-
   Extend Khanh Jump from 10 to 20 levels. Levels 11-20 reuse layouts 1-10
   exactly, then add an end-of-level boss fight vs dark-tinted Black
   Nguyên/Khôi/Father with jump-to-dodge bullet combat.
-status: in-progress
+status: completed
 priority: P2
 branch: main
 tags:
@@ -39,7 +39,7 @@ Levels 11-20 clone layouts of levels 1-10 (11=1 … 20=10) — no new layouts. R
 | 1 | [Level Data Extension 11-20](./phase-01-level-data-extension-11-20.md) | Completed |
 | 2 | [Boss Fight Core State](./phase-02-boss-fight-core-state.md) | Completed |
 | 3 | [Boss Rendering And HUD](./phase-03-boss-rendering-and-hud.md) | Completed |
-| 4 | [Integration Verification And Docs](./phase-04-integration-verification-and-docs.md) | In Progress |
+| 4 | [Integration Verification And Docs](./phase-04-integration-verification-and-docs.md) | Completed |
 
 ## Dependencies
 

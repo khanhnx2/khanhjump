@@ -2,10 +2,12 @@ import { JUMP_VELOCITY, GRAVITY } from './player-cube.js';
 
 // End-of-level duel: player locks in place, bosses spawn one at a time from the
 // level's bossSequence. Bullets fly in the ground band [0, 1); an airborne body
-// (bottom at y >= 1) dodges. Bullets step ~0.73 tiles per capped frame (22 tiles/s
-// at MAX_DT 1/30), under the 1-tile hitbox width, so no tunneling checks needed.
+// (bottom at y >= 1) dodges. Player bullets step ~0.73 tiles per capped frame
+// (22 tiles/s at MAX_DT 1/30), boss bullets ~0.37 tiles/frame (11 tiles/s) —
+// both under the 1-tile hitbox width, so no tunneling checks needed.
 export const BOSS_DISTANCE = 6;
-const BULLET_SPEED = 22;
+const PLAYER_BULLET_SPEED = 22;
+const BOSS_BULLET_SPEED = 11; // half of PLAYER_BULLET_SPEED, per user request
 const HOP_ROLL_INTERVAL = 0.5;
 const DODGE_BAND_TOP = 1;
 
@@ -18,6 +20,7 @@ export class BossFight {
     this.playerBullets = [];
     this.playerHit = false;
     this.bossDefeated = false;
+    this.defeatedBoss = null;
     this.done = false;
     this.spawnNext();
   }
@@ -86,25 +89,25 @@ export class BossFight {
     const boss = this.boss;
 
     for (const bullet of this.playerBullets) {
-      bullet.x += BULLET_SPEED * dt;
+      bullet.x += PLAYER_BULLET_SPEED * dt;
       if (boss.y < DODGE_BAND_TOP && bullet.x > boss.x && bullet.x < boss.x + boss.scale) {
         bullet.destroyed = true;
         boss.hp -= 1;
       }
     }
     this.playerBullets = this.playerBullets.filter(
-      (bullet) => !bullet.destroyed && bullet.x < this.spawnX + BOSS_DISTANCE
+      (bullet) => !bullet.destroyed && bullet.x < this.spawnX + BOSS_DISTANCE * 4
     );
 
     for (const bullet of this.bossBullets) {
-      bullet.x -= BULLET_SPEED * dt;
+      bullet.x -= BOSS_BULLET_SPEED * dt;
       if (player.y < DODGE_BAND_TOP && bullet.x > player.x && bullet.x < player.x + 1) {
         bullet.destroyed = true;
         this.playerHit = true;
       }
     }
     this.bossBullets = this.bossBullets.filter(
-      (bullet) => !bullet.destroyed && bullet.x > player.x - BOSS_DISTANCE
+      (bullet) => !bullet.destroyed && bullet.x > player.x - BOSS_DISTANCE * 4
     );
 
     if (boss.hp <= 0) {
