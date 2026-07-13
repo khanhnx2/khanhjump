@@ -33,6 +33,44 @@
   display: none;
 }
 
+#mini-hp {
+  position: fixed;
+  top: max(112px, calc(env(safe-area-inset-top) + 112px));
+  left: max(12px, env(safe-area-inset-left));
+  max-width: calc(100vw - 24px);
+  color: #ffd278;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.72);
+}
+
+#mini-hp.hidden {
+  display: none;
+}
+
+#mini-add-hp {
+  position: fixed;
+  top: max(140px, calc(env(safe-area-inset-top) + 140px));
+  left: max(12px, env(safe-area-inset-left));
+  max-width: calc(100vw - 24px);
+  color: #c084fc;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.72);
+}
+
+#mini-add-hp.hidden {
+  display: none;
+}
+
 @media (max-width: 520px) {
   #heart-bar {
     top: max(54px, calc(env(safe-area-inset-top) + 54px));
@@ -43,6 +81,18 @@
   #boss-hp {
     top: max(78px, calc(env(safe-area-inset-top) + 78px));
     font-size: 16px;
+    letter-spacing: 0;
+  }
+
+  #mini-hp {
+    top: max(102px, calc(env(safe-area-inset-top) + 102px));
+    font-size: 16px;
+    letter-spacing: 0;
+  }
+
+  #mini-add-hp {
+    top: max(126px, calc(env(safe-area-inset-top) + 126px));
+    font-size: 14px;
     letter-spacing: 0;
   }
 }

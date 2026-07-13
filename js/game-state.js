@@ -1,8 +1,9 @@
 import { PlayerCube } from './player-cube.js';
 import { levels } from './level-data.js';
-import { resolveCollisions } from './collision-detection.js';
+import { resolveCollisions, obstacleOverlap } from './collision-detection.js';
 import { findProjectileHit } from './projectile-collision.js';
 import { BossFight } from './boss-fight-state.js';
+import { MiniCompanion } from './mini-companion-state.js';
 
 // State machine: ready → playing → dead/win → playing
 const FLY_SECONDS = 3;
@@ -38,6 +39,7 @@ export class GameState {
     this.projectiles = [];
     this.bossFight = null;
     this.bossFireTimer = 0;
+    this.miniNguyen = null;
     this.listeners = { damage: [], death: [], restart: [], win: [], start: [], powerup: [], health: [], matchRequired: [], bossStart: [], bossDefeated: [] };
     this.resetLevelObjects();
     this.bindInput();
@@ -52,6 +54,7 @@ export class GameState {
     this.levelIndex = Math.max(0, Math.min(levels.length - 1, levelNumber - 1));
     this.level = levels[this.levelIndex];
     this.bossFight = null;
+    this.miniNguyen = this.level.hasMiniNguyen ? new MiniCompanion() : null;
     this.player.reset();
     this.elapsedSeconds = 0;
     this.resetLevelObjects();
@@ -114,6 +117,7 @@ export class GameState {
     this.projectiles = [];
     this.bossFight = null;
     this.bossFireTimer = 0;
+    this.miniNguyen = this.level.hasMiniNguyen ? new MiniCompanion() : null;
     this.resetLevelObjects();
     this.state = 'playing';
     this.emit('health');
@@ -149,6 +153,7 @@ export class GameState {
     }
     this.collectPickups();
     this.updateProjectiles(dt);
+    if (this.miniNguyen && this.miniNguyen.alive) this.updateMiniNguyen(dt);
     const hitObstacle = resolveCollisions(this.player, prevBottom, this.obstacles);
     if (hitObstacle) {
       if (this.invincibleTimer > 0) this.destroyObstacle(hitObstacle);
@@ -171,7 +176,7 @@ export class GameState {
     this.ammo = 0;
     this.projectiles = [];
     this.bossFireTimer = BOSS_PLAYER_FIRE_INTERVAL;
-    this.bossFight = new BossFight(this.level.bossSequence, this.player.x);
+    this.bossFight = new BossFight(this.level.bossSequence, this.player.x, this.miniNguyen, this.level.hasMiniNguyen);
     this.state = 'boss';
     this.emit('bossStart');
   }
@@ -193,6 +198,14 @@ export class GameState {
       if (this.hearts <= 0) return this.die();
     }
     if (this.bossFight.done) this.winLevel();
+  }
+  updateMiniNguyen(dt) {
+    const shouldFire = this.miniNguyen.updateRun(dt, this.player);
+    if (shouldFire) {
+      this.projectiles.push({ x: this.miniNguyen.x + 1, y: this.miniNguyen.y + 0.5 });
+    }
+    const hit = obstacleOverlap(this.miniNguyen.x, this.miniNguyen.y, this.obstacles);
+    if (hit) this.miniNguyen.takeDamage(1);
   }
   get progress() {
     return Math.min(1, Math.max(0, this.player.x / this.level.length));

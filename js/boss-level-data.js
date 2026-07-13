@@ -1,5 +1,7 @@
-// Boss roster and per-level fight queues for levels 11-20.
+// Boss roster and per-level fight queues for levels 11-20 and 21-30.
 // `avatar` selects which family PNG gets the dark tint; big variants reuse it at 1.5x.
+// 21-30 mirrors 11-20 exactly; the Mini Nguyên/Mini Black Nguyên companions
+// added on top of those fights live in mini-companion-state.js and boss-fight-state.js.
 
 export const BOSS_TYPES = {
   nguyen: { avatar: 'nguyen', hp: 10, fireInterval: 2.0, scale: 1 },
@@ -29,7 +31,17 @@ const BOSS_SEQUENCES = {
   17: ['nguyen', 'khoi', 'father'],
   18: ['nguyen', 'big-nguyen'],
   19: ['khoi', 'big-khoi'],
-  20: ['father', 'big-father']
+  20: ['father', 'big-father'],
+  21: ['nguyen'],
+  22: ['khoi'],
+  23: ['father'],
+  24: ['nguyen', 'khoi'],
+  25: ['nguyen', 'father'],
+  26: ['khoi', 'father'],
+  27: ['nguyen', 'khoi', 'father'],
+  28: ['nguyen', 'big-nguyen'],
+  29: ['khoi', 'big-khoi'],
+  30: ['father', 'big-father']
 };
 
 // Fresh objects per call so a fight can mutate hp without touching level data.

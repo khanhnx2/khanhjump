@@ -22,6 +22,23 @@ function spikeHitbox(ob) {
   };
 }
 
+// Read-only overlap test for a 1x1 box at (x, y) — no landing/mutation, used by
+// companions that never "stand" on anything (contact always counts as a hit).
+export function obstacleOverlap(x, y, obstacles) {
+  for (const ob of obstacles) {
+    if (ob.x + 1 < x - 1) continue;
+    if (ob.x > x + 2) break;
+
+    if (ob.type === 'spike' || ob.type === 'ceiling-spike') {
+      const box = spikeHitbox(ob);
+      if (aabbOverlap(x, y, 1, 1, box.x, box.y, box.w, box.h)) return ob;
+    } else if (ob.type === 'block') {
+      if (aabbOverlap(x, y, 1, 1, ob.x, ob.y, 1, 1)) return ob;
+    }
+  }
+  return null;
+}
+
 // Returns the hit obstacle or null. May mutate player (snap-landing on block tops).
 // prevBottom = player.y on the previous frame, used to disambiguate
 // "was above the block and fell onto it" (land) from "ran into its side" (death).

@@ -10,12 +10,19 @@ const PLAYER_BULLET_SPEED = 22;
 const BOSS_BULLET_SPEED = 11; // half of PLAYER_BULLET_SPEED, per user request
 const HOP_ROLL_INTERVAL = 0.5;
 const DODGE_BAND_TOP = 1;
+const MINI_ADD_HP = 10;
+const MINI_ADD_FIRE_INTERVAL = 2.0;
+const MINI_ADD_SCALE = 0.5;
+const MINI_ADD_OFFSET_X = -1;
 
 export class BossFight {
-  constructor(bossSequence, playerX) {
+  constructor(bossSequence, playerX, miniNguyen = null, hasMiniAdd = false) {
     this.queue = bossSequence.map((boss) => ({ ...boss }));
     this.spawnX = playerX + BOSS_DISTANCE;
     this.boss = null;
+    this.miniAdd = null;
+    this.miniNguyen = miniNguyen;
+    this.hasMiniAdd = hasMiniAdd;
     this.bossBullets = [];
     this.playerBullets = [];
     this.playerHit = false;
@@ -29,6 +36,7 @@ export class BossFight {
     const def = this.queue.shift();
     if (!def) {
       this.boss = null;
+      this.miniAdd = null;
       this.done = true;
       return;
     }
@@ -42,6 +50,18 @@ export class BossFight {
       fireTimer: def.fireInterval,
       hopTimer: HOP_ROLL_INTERVAL
     };
+    this.miniAdd = this.hasMiniAdd
+      ? {
+          hp: MINI_ADD_HP,
+          maxHp: MINI_ADD_HP,
+          avatar: 'nguyen',
+          scale: MINI_ADD_SCALE,
+          fireInterval: MINI_ADD_FIRE_INTERVAL,
+          fireTimer: MINI_ADD_FIRE_INTERVAL,
+          x: this.boss.x + MINI_ADD_OFFSET_X,
+          y: 0
+        }
+      : null;
   }
 
   shootFromPlayer(player) {
@@ -53,7 +73,24 @@ export class BossFight {
     this.bossDefeated = false;
     if (this.done) return;
     this.updateBoss(dt, rng);
+    this.updateMiniAdd(dt);
+    this.updateMiniNguyen(dt, player);
     this.updateBullets(dt, player);
+  }
+
+  updateMiniAdd(dt) {
+    if (!this.miniAdd) return;
+    this.miniAdd.fireTimer -= dt;
+    if (this.miniAdd.fireTimer <= 0) {
+      this.miniAdd.fireTimer += this.miniAdd.fireInterval;
+      this.bossBullets.push({ x: this.miniAdd.x - 0.2, y: 0.5 });
+    }
+  }
+
+  updateMiniNguyen(dt, player) {
+    if (!this.miniNguyen || !this.miniNguyen.alive) return;
+    const shouldFire = this.miniNguyen.updateBossPosition(dt, player);
+    if (shouldFire) this.playerBullets.push({ x: this.miniNguyen.x + 1, y: 0.5 });
   }
 
   updateBoss(dt, rng) {
@@ -90,6 +127,12 @@ export class BossFight {
 
     for (const bullet of this.playerBullets) {
       bullet.x += PLAYER_BULLET_SPEED * dt;
+      if (this.miniAdd && this.miniAdd.hp > 0 && bullet.x > this.miniAdd.x && bullet.x < this.miniAdd.x + this.miniAdd.scale) {
+        bullet.destroyed = true;
+        this.miniAdd.hp -= 1;
+        if (this.miniAdd.hp <= 0) this.miniAdd = null;
+        continue;
+      }
       if (boss.y < DODGE_BAND_TOP && bullet.x > boss.x && bullet.x < boss.x + boss.scale) {
         bullet.destroyed = true;
         boss.hp -= 1;
@@ -101,6 +144,11 @@ export class BossFight {
 
     for (const bullet of this.bossBullets) {
       bullet.x -= BOSS_BULLET_SPEED * dt;
+      if (this.miniNguyen && this.miniNguyen.alive && bullet.x > this.miniNguyen.x && bullet.x < this.miniNguyen.x + this.miniNguyen.scale) {
+        bullet.destroyed = true;
+        this.miniNguyen.takeDamage(1);
+        continue;
+      }
       if (player.y < DODGE_BAND_TOP && bullet.x > player.x && bullet.x < player.x + 1) {
         bullet.destroyed = true;
         this.playerHit = true;

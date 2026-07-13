@@ -7,13 +7,14 @@ The start screen includes an About me screen with creator contact information an
 
 ## Levels
 
-- The game has `20` levels.
+- The game has `30` levels.
 - Levels `11-20` reuse the exact map layouts of levels `1-10` (11=1, 12=2, … 20=10) and add a boss fight at the finish line.
+- Levels `21-30` reuse the exact map layouts of levels `1-10` and the boss roster of levels `11-20`, with new companion mechanics (see below).
 - Father, Khôi, and Nguyên each store their own current level.
 - Custom characters also store their own current level.
 - Character name and avatar can be changed from the start screen.
 - New characters can be added, and existing characters can be deleted.
-- Clearing a level unlocks the next level for that character, up to level `20`.
+- Clearing a level unlocks the next level for that character, up to level `30`.
 
 ## Start Gate
 
@@ -54,9 +55,48 @@ The start screen includes an About me screen with creator contact information an
 | 19 | Black Khôi → Big Black Khôi (25 hearts, every 1s) |
 | 20 | Black Father → Big Black Father (40 hearts, every 0.5s) |
 
+## Boss Levels (21-30)
+
+- Levels `21-30` follow the same boss-fight rules as levels `11-20` but add two new companion units.
+- The boss roster for levels `21-30` mirrors levels `11-20` exactly (level 21 has the same boss sequence as level 11, level 22 mirrors 12, etc.).
+
+### Mini Nguyên (Ally Companion)
+
+- Mini Nguyên is automatically present for the entire run on levels `21-30`.
+- During the run phase, Mini Nguyên trails behind the player (flying, mirrors player's y position exactly, no independent physics).
+- Mini Nguyên's bullets can destroy obstacles, acting identically to player bullets fired from gun pickups.
+- During boss fights, Mini Nguyên repositions in front of the player and shields incoming boss bullets (each hit taken by Mini Nguyên instead of the player removes `1` Mini Nguyên heart instead of `1` player heart).
+- Mini Nguyên continues firing its own bullets at the boss even while shielding.
+- Mini Nguyên: `20` hearts, no regen, fires `1` bullet every `2` seconds.
+- If Mini Nguyên's hearts reach `0` during a level attempt, it dies (no mid-attempt respawn; a fresh one spawns on `restart()`).
+- Mini Nguyên takes `1` damage on obstacle contact (same damage rules as the player).
+
+### Mini Black Nguyên (Enemy Add)
+
+- Mini Black Nguyên spawns fresh alongside every main boss encountered on levels `21-30` (works for single-boss and multi-boss sequences; respawns for each boss in the sequence).
+- Mini Black Nguyên is an independent kill target for the player's bullets (killing it does not damage the main boss; killing the main boss does not kill the add).
+- Mini Black Nguyên: `10` hearts, fires `1` bullet every `2` seconds at the player.
+
+## Boss Roster (Levels 21-30)
+
+- Levels `21-30` use the identical boss sequences as levels `11-20`, plus a fresh Mini Black Nguyên spawns alongside each main boss.
+
+| Level | Bosses (in order) |
+|---|---|
+| 21 | Black Nguyên (10 hearts, shoots every 2s) + Mini Black Nguyên (10 hearts, every 2s) |
+| 22 | Black Khôi (20 hearts, every 1.5s) + Mini Black Nguyên (10 hearts, every 2s) |
+| 23 | Black Father (30 hearts, every 1s) + Mini Black Nguyên (10 hearts, every 2s) |
+| 24 | Black Nguyên → Black Khôi (+ Mini Black Nguyên spawns for each) |
+| 25 | Black Nguyên → Black Father (+ Mini Black Nguyên spawns for each) |
+| 26 | Black Khôi → Black Father (+ Mini Black Nguyên spawns for each) |
+| 27 | Black Nguyên → Black Khôi → Black Father (+ Mini Black Nguyên spawns for each) |
+| 28 | Black Nguyên → Big Black Nguyên (15 hearts, every 1.5s) (+ Mini Black Nguyên spawns for each) |
+| 29 | Black Khôi → Big Black Khôi (25 hearts, every 1s) (+ Mini Black Nguyên spawns for each) |
+| 30 | Black Father → Big Black Father (40 hearts, every 0.5s) (+ Mini Black Nguyên spawns for each) |
+
 ## Win And Lose
 
-- Win when `player.x >= currentLevel.length` (levels 1-10), or after defeating every boss (levels 11-20).
+- Win when `player.x >= currentLevel.length` (levels 1-10, 21-30), or after defeating every boss (levels 11-20, 21-30).
 - Lose only when hearts reach `0`.
 - Colliding with an obstacle removes `1` heart and destroys that obstacle.
 - Flying high into ceiling spikes also removes `1` heart.

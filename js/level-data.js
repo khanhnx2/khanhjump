@@ -2,8 +2,10 @@
 
 import { getBossSequence } from './boss-level-data.js';
 
-export const LEVEL_COUNT = 20;
-const LAYOUT_COUNT = 10; // levels 11-20 reuse layouts 1-10 and add a boss fight
+export const LEVEL_COUNT = 30;
+const LAYOUT_COUNT = 10; // levels 11-20 and 21-30 reuse layouts 1-10 and add a boss fight
+const MINI_NGUYEN_MIN_LEVEL = 21;
+const MINI_NGUYEN_MAX_LEVEL = 30;
 
 const BASE_PICKUPS = [
   { type: 'wings', x: 74, y: 1.2 },
@@ -61,7 +63,8 @@ export const levels = Array.from({ length: LEVEL_COUNT }, (_, index) => {
   // Layout repeats every 10 levels; GameState deep-copies obstacles/pickups per
   // run, so sharing layout arrays between level N and N+10 is safe.
   const layout = buildLevel(((number - 1) % LAYOUT_COUNT) + 1);
-  return { ...layout, number, bossSequence: getBossSequence(number) };
+  const hasMiniNguyen = number >= MINI_NGUYEN_MIN_LEVEL && number <= MINI_NGUYEN_MAX_LEVEL;
+  return { ...layout, number, bossSequence: getBossSequence(number), hasMiniNguyen };
 });
 export const level = levels[0];
 

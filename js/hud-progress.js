@@ -1,7 +1,8 @@
 // DOM-based HUD: progress bar (top center), attempt counter, mute button,
-// boss HP label during boss fights.
+// boss HP label during boss fights, Mini Nguyên / Mini Black Nguyên HP labels.
 
 import { BOSS_LABELS } from './boss-level-data.js';
+import { MINI_MAX_HP } from './mini-companion-state.js';
 
 export class Hud {
   constructor(game, audio) {
@@ -12,6 +13,8 @@ export class Hud {
     this.attemptLabel = document.getElementById('attempt-label');
     this.heartBar = document.getElementById('heart-bar');
     this.bossHp = document.getElementById('boss-hp');
+    this.miniHp = document.getElementById('mini-hp');
+    this.miniAddHp = document.getElementById('mini-add-hp');
     this.muteBtn = document.getElementById('mute-btn');
 
     this.attemptTimer = 0;
@@ -43,6 +46,8 @@ export class Hud {
     this.percent.textContent = `${pct}%`;
     this.updateHearts();
     this.updateBossHp();
+    this.updateMiniHp();
+    this.updateMiniAddHp();
 
     if (this.attemptTimer > 0) {
       this.attemptTimer -= dt;
@@ -62,5 +67,25 @@ export class Hud {
     }
     this.bossHp.classList.remove('hidden');
     this.bossHp.textContent = `${BOSS_LABELS[boss.key]} ♥ ${boss.hp}/${boss.maxHp}`;
+  }
+
+  updateMiniHp() {
+    const mini = this.game.miniNguyen;
+    if (!mini || !mini.alive) {
+      this.miniHp.classList.add('hidden');
+      return;
+    }
+    this.miniHp.classList.remove('hidden');
+    this.miniHp.textContent = `Mini Nguyên ♥ ${mini.hp}/${MINI_MAX_HP}`;
+  }
+
+  updateMiniAddHp() {
+    const miniAdd = this.game.state === 'boss' && this.game.bossFight && this.game.bossFight.miniAdd;
+    if (!miniAdd) {
+      this.miniAddHp.classList.add('hidden');
+      return;
+    }
+    this.miniAddHp.classList.remove('hidden');
+    this.miniAddHp.textContent = `Mini Black Nguyên ♥ ${miniAdd.hp}/${miniAdd.maxHp}`;
   }
 }

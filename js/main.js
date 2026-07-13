@@ -2,7 +2,7 @@ import { TILE, setPlayerFace } from './player-cube.js';
 import { GameState } from './game-state.js';
 import { drawObstacles, drawFinishLine } from './obstacle-renderer.js';
 import { drawPickups, drawProjectiles } from './power-up-renderer.js';
-import { drawBoss, drawBossBullets } from './boss-renderer.js';
+import { drawBoss, drawBossBullets, drawCompanion } from './boss-renderer.js';
 import { drawBackground, drawFloor } from './background-parallax.js';
 import { ParticleSystem } from './particle-effects.js';
 import { Hud } from './hud-progress.js';
@@ -156,6 +156,7 @@ function render() {
 
   if (game.state === 'boss' && game.bossFight) {
     drawBoss(ctx, game.bossFight.boss, view);
+    if (game.bossFight.miniAdd) drawBoss(ctx, game.bossFight.miniAdd, view);
     drawBossBullets(ctx, game.bossFight.bossBullets, view);
     drawProjectiles(ctx, game.bossFight.playerBullets, view);
   }
@@ -163,6 +164,8 @@ function render() {
   if (game.state !== 'dead') {
     game.player.draw(ctx, view, game.invincibleTimer > 0);
   }
+
+  if (game.miniNguyen && game.miniNguyen.alive) drawCompanion(ctx, game.miniNguyen, view);
 
   particles.draw(ctx, view);
 }
