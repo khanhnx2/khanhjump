@@ -58,6 +58,19 @@ This is handled by `js/update-notifier.js` and the service worker; no backend no
 | Toast never appears | Pages source not set to "GitHub Actions" | See Critical One-Time Setup above |
 | Build fails on GitHub Actions | Missing or malformed asset in repo | Check `scripts/prepare-android-web-assets.js` entries list matches actual files |
 
+## Storage Stability (Player Data Across Updates)
+
+Updates replace cached assets (Cache Storage) only — they never touch localStorage, so character level progress, top-ten scores, and the character list survive every deploy automatically.
+
+| Rule | Why |
+|------|-----|
+| localStorage keys are **immutable**: `khanhJumpCharactersV1`, `khanhJumpSelectedCharacterV1`, `khanhJumpCharacterLevelsV1`, `khanhJumpWordAppearancesV1`, `khanh-jump-top-ten` | Renaming a key orphans every player's existing data |
+| Changing a stored value's shape **requires a migration** that reads the old shape (or a new `V2` key + one-time copy from `V1`) | Defensive parsers fall back to empty defaults — a shape change without migration silently resets players |
+| Adding levels is always safe; **removing** levels clamps saved progress down (`clampLevel` in `js/character-level-progress.js`) | Progress is capped to `LEVEL_COUNT` on read |
+| Keep the site on the same origin (`khanhnx2.github.io`) | localStorage is per-origin; moving domains strands all data |
+
+Out of app control: users clearing browser site data / Android app data, and iOS Safari evicting storage of sites unused for ~7 days (installed PWA/APK unaffected).
+
 ## Capacitor / Android / iOS
 
 The `npm run build:android` and mobile builds remain separate from this web pipeline. They continue to build their own versions with their own SW bundling. This guide covers the web (GitHub Pages) deployment only.
