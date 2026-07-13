@@ -205,7 +205,11 @@ export class GameState {
       this.projectiles.push({ x: this.miniNguyen.x + 1, y: this.miniNguyen.y + 0.5 });
     }
     const hit = obstacleOverlap(this.miniNguyen.x, this.miniNguyen.y, this.obstacles);
-    if (hit) this.miniNguyen.takeDamage(1);
+    // Obstacles aren't destroyed on contact (only projectiles clear them), so
+    // without this guard a single wide obstacle would deal 1 damage per frame
+    // of overlap instead of once per contact.
+    if (hit && hit !== this.miniNguyen.lastHitObstacle) this.miniNguyen.takeDamage(1);
+    this.miniNguyen.lastHitObstacle = hit;
   }
   get progress() {
     return Math.min(1, Math.max(0, this.player.x / this.level.length));

@@ -19,6 +19,7 @@ export class MiniCompanion {
     this.fireTimer = MINI_FIRE_INTERVAL;
     this.x = 0;
     this.y = 0;
+    this.lastHitObstacle = null;
   }
 
   // Ticks the fire timer and returns true the frame a bullet should spawn.
