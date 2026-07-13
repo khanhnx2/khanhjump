@@ -1,6 +1,6 @@
 import { PlayerCube } from './player-cube.js';
 import { levels } from './level-data.js';
-import { resolveCollisions, obstacleOverlap } from './collision-detection.js';
+import { resolveCollisions } from './collision-detection.js';
 import { findProjectileHit } from './projectile-collision.js';
 import { BossFight } from './boss-fight-state.js';
 import { MiniCompanion } from './mini-companion-state.js';
@@ -199,17 +199,16 @@ export class GameState {
     }
     if (this.bossFight.done) this.winLevel();
   }
+  // Mini Nguyên is immune to run-phase obstacles: it mirrors the player's y
+  // in real time at a fixed x offset rather than replaying it with a matching
+  // delay, so its arc doesn't track the terrain's jump-timing the way the
+  // player's does — obstacle contact would punish it for gaps it can't
+  // actually dodge. It only takes damage from boss bullets it shields.
   updateMiniNguyen(dt) {
     const shouldFire = this.miniNguyen.updateRun(dt, this.player);
     if (shouldFire) {
       this.projectiles.push({ x: this.miniNguyen.x + 1, y: this.miniNguyen.y + 0.5 });
     }
-    const hit = obstacleOverlap(this.miniNguyen.x, this.miniNguyen.y, this.obstacles);
-    // Obstacles aren't destroyed on contact (only projectiles clear them), so
-    // without this guard a single wide obstacle would deal 1 damage per frame
-    // of overlap instead of once per contact.
-    if (hit && hit !== this.miniNguyen.lastHitObstacle) this.miniNguyen.takeDamage(1);
-    this.miniNguyen.lastHitObstacle = hit;
   }
   get progress() {
     return Math.min(1, Math.max(0, this.player.x / this.level.length));

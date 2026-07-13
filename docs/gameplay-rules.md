@@ -65,11 +65,11 @@ The start screen includes an About me screen with creator contact information an
 - Mini Nguyên is automatically present for the entire run on levels `21-30`.
 - During the run phase, Mini Nguyên trails behind the player (flying, mirrors player's y position exactly, no independent physics).
 - Mini Nguyên's bullets can destroy obstacles, acting identically to player bullets fired from gun pickups.
+- Mini Nguyên is immune to obstacles during the run phase — it mirrors the player's height in real time at a fixed trailing offset rather than replaying the player's exact jump timing, so it can't reliably dodge the terrain and isn't punished for it.
 - During boss fights, Mini Nguyên repositions in front of the player and shields incoming boss bullets (each hit taken by Mini Nguyên instead of the player removes `1` Mini Nguyên heart instead of `1` player heart).
 - Mini Nguyên continues firing its own bullets at the boss even while shielding.
 - Mini Nguyên: `20` hearts, no regen, fires `1` bullet every `2` seconds.
 - If Mini Nguyên's hearts reach `0` during a level attempt, it dies (no mid-attempt respawn; a fresh one spawns on `restart()`).
-- Mini Nguyên takes `1` damage on obstacle contact (same damage rules as the player).
 
 ### Mini Black Nguyên (Enemy Add)
 
