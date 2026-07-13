@@ -115,3 +115,22 @@ html, body {
   font-size: clamp(14px, 2.5vw, 22px);
   opacity: 0.85;
 }
+
+#update-toast {
+  position: fixed;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  padding: 12px 20px;
+  border: 2px solid #00e5ff;
+  border-radius: 10px;
+  background: #0b1030;
+  color: #fff;
+  font-size: clamp(14px, 2.5vw, 18px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}

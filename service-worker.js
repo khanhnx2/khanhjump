@@ -14,7 +14,6 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './assets/android-icon-192.png',
   './assets/android-icon-512.png',
-  './assets/android-icon.svg',
   './assets/characters/player-father.png',
   './assets/characters/player-khoi.png',
   './assets/characters/player-nguyen.png',
@@ -30,6 +29,7 @@ const APP_SHELL = [
   './js/boss-fight-state.js',
   './js/boss-renderer.js',
   './js/hud-progress.js',
+  './js/mini-companion-state.js',
   './js/leaderboard.js',
   './js/level-data.js',
   './js/obstacle-renderer.js',
@@ -38,7 +38,8 @@ const APP_SHELL = [
   './js/power-up-renderer.js',
   './js/beginner-word-bank.js',
   './js/matching-game.js',
-  './js/player-cube.js'
+  './js/player-cube.js',
+  './js/update-notifier.js'
 ];
 
 self.addEventListener('install', (event) => {

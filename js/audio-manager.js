@@ -5,11 +5,19 @@ export class AudioManager {
   constructor(game) {
     this.context = null;
     this.master = null;
+    this.noiseBuffer = null;
     this.timer = null;
     this.step = 0;
     this.muted = false;
-    this.tempo = 132;
-    this.notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 293.66, 440.00];
+    this.tempo = 160;
+    // 16-step A-minor riff: two ascending runs, second one resolving higher
+    // for a driving chase feel.
+    this.notes = [
+      220.00, 261.63, 329.63, 440.00,
+      392.00, 329.63, 440.00, 523.25,
+      220.00, 261.63, 329.63, 440.00,
+      587.33, 523.25, 493.88, 659.25
+    ];
 
     game.on('start', () => this.playFromStart());
     game.on('restart', () => this.playFromStart());
@@ -84,17 +92,63 @@ export class AudioManager {
     this.master = this.context.createGain();
     this.master.gain.value = this.muted ? 0 : 0.28;
     this.master.connect(this.context.destination);
+
+    // Shared white-noise buffer for the hi-hat voice.
+    const length = Math.floor(this.context.sampleRate * 0.1);
+    this.noiseBuffer = this.context.createBuffer(1, length, this.context.sampleRate);
+    const data = this.noiseBuffer.getChannelData(0);
+    for (let i = 0; i < length; i += 1) data[i] = Math.random() * 2 - 1;
   }
 
+  // Steps are half-beats; a bar is 16 steps. Kick lands on the quarter
+  // notes, hats on the off-beats between them, bass drives every beat.
   scheduleBeat() {
     const now = this.context.currentTime;
-    const note = this.notes[this.step % this.notes.length];
-    const bass = note / 2;
+    const step = this.step % 16;
+    const note = this.notes[step];
 
     this.playTone(note, now, 0.11, 'square', 0.12);
-    if (this.step % 2 === 0) this.playTone(bass, now, 0.18, 'sawtooth', 0.08);
+    if (step % 2 === 0) this.playTone(note / 2, now, 0.16, 'sawtooth', 0.1);
+    if (step % 4 === 0) this.playKick(now);
+    if (step % 4 === 2) this.playHat(now);
 
     this.step += 1;
+  }
+
+  // Synth kick: sine pitch-drop 150 -> 50 Hz with a fast gain decay.
+  playKick(startTime) {
+    const oscillator = this.context.createOscillator();
+    const gain = this.context.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(150, startTime);
+    oscillator.frequency.exponentialRampToValueAtTime(50, startTime + 0.12);
+    gain.gain.setValueAtTime(0.25, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.14);
+
+    oscillator.connect(gain);
+    gain.connect(this.master);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + 0.16);
+  }
+
+  // Hi-hat: short high-passed noise burst.
+  playHat(startTime) {
+    const source = this.context.createBufferSource();
+    const filter = this.context.createBiquadFilter();
+    const gain = this.context.createGain();
+
+    source.buffer = this.noiseBuffer;
+    filter.type = 'highpass';
+    filter.frequency.value = 7000;
+    gain.gain.setValueAtTime(0.06, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.05);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.master);
+    source.start(startTime);
+    source.stop(startTime + 0.06);
   }
 
   playTone(frequency, startTime, duration, type, gainValue) {

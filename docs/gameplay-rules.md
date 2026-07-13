@@ -2,7 +2,7 @@
 
 ## Overview
 
-Khanh Jump is a Canvas runner. The player moves forward automatically, taps to jump, and wins by reaching the end of the level.
+Khôi Jump is a Canvas runner. The player moves forward automatically, taps to jump, and wins by reaching the end of the level.
 The start screen includes an About me screen with creator contact information and website.
 
 ## Levels

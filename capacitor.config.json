@@ -1,6 +1,6 @@
 {
   "appId": "com.example.geometrydash",
-  "appName": "Khanh Jump",
+  "appName": "Khôi Jump",
   "webDir": "www",
   "ios": {
     "contentInset": "always",

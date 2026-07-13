@@ -1,7 +1,7 @@
 {
-  "name": "Khanh Jump",
-  "short_name": "Khanh Jump",
-  "description": "A lightweight Khanh Jump canvas game playable on Android.",
+  "name": "Khôi Jump",
+  "short_name": "Khôi Jump",
+  "description": "A lightweight Khôi Jump canvas game playable on Android.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
@@ -20,12 +20,6 @@
       "src": "assets/android-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/android-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]

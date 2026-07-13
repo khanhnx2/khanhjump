@@ -12,6 +12,7 @@ import { MatchingGame } from './matching-game.js';
 import { completeCharacterLevel, getCharacterLevel } from './character-level-progress.js';
 import { CharacterManager } from './character-manager.js';
 import { initAboutScreen } from './about-screen.js';
+import { initUpdateNotifier } from './update-notifier.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -197,8 +198,10 @@ requestAnimationFrame(frame);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(() => {
-      // The game still works in browsers that block service workers.
-    });
+    navigator.serviceWorker.register('./service-worker.js')
+      .then((registration) => initUpdateNotifier(registration))
+      .catch(() => {
+        // The game still works in browsers that block service workers.
+      });
   });
 }
