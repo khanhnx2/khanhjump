@@ -1,10 +1,11 @@
-// Ally companion for levels 21-40. Tracks the player's y directly (no
+// Ally companion for levels 21-50. Tracks the player's y directly (no
 // independent gravity/landing — it flies), trails behind during the run and
-// shields the player in front during boss fights. Two variants share every
+// shields the player in front during boss fights. All variants share every
 // behavior; only stats/avatar differ.
 export const COMPANION_TYPES = {
   nguyen: { hp: 20, fireInterval: 2.0, avatar: 'nguyen', label: 'Mini Nguyên' },
-  khoi: { hp: 30, fireInterval: 1.5, avatar: 'khoi', label: 'Mini Khôi' }
+  khoi: { hp: 30, fireInterval: 1.5, avatar: 'khoi', label: 'Mini Khôi' },
+  father: { hp: 40, fireInterval: 1.0, avatar: 'father', label: 'Mini Father' }
 };
 
 export const MINI_SCALE = 0.5;

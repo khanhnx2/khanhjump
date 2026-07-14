@@ -2,11 +2,13 @@
 
 import { getBossSequence } from './boss-level-data.js';
 
-export const LEVEL_COUNT = 40;
+export const LEVEL_COUNT = 50;
 const LAYOUT_COUNT = 10; // levels past 10 reuse layouts 1-10 and add a boss fight
 
-// Ally companion per level range: none (1-20), Mini Nguyên (21-30), Mini Khôi (31-40).
+// Ally companion per level range: none (1-20), Mini Nguyên (21-30),
+// Mini Khôi (31-40), Mini Father (41-50).
 function companionTypeFor(number) {
+  if (number >= 41) return 'father';
   if (number >= 31) return 'khoi';
   if (number >= 21) return 'nguyen';
   return null;
