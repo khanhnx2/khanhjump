@@ -22,13 +22,13 @@ The start screen includes an About me screen with creator contact information an
 
 - Every start or retry rolls `random(3)`.
 - The English matching board opens only when the random result is `0`.
-- The board is `3x4`: `6` English beginner words and `6` Vietnamese meanings.
-- In landscape, the same board displays as `4x3` so it fits the screen.
+- The board is `3x2`: `3` English beginner words and `3` Vietnamese meanings.
+- The same `3x2` layout is used in both portrait and landscape.
 - Matching tracks how many times each English word has appeared.
-- If at least `6` words have appeared `5+` times, the game rolls `random(2)`.
-- When that result is `0`, matching uses `6` words from the `5+` appearance group as face-down cards.
-- Otherwise matching uses the `6` least-seen words with all cards visible from the start.
-- The runner starts only after all `6` pairs are matched.
+- If at least `3` words have appeared `5+` times, the game rolls `random(2)`.
+- When that result is `0`, matching uses `3` words from the `5+` appearance group as face-down cards.
+- Otherwise matching uses the `3` least-seen words with all cards visible from the start.
+- The runner starts only after all `3` pairs are matched.
 - The word bank has `200` beginner nouns and `50` beginner verbs.
 
 ## Boss Levels (11-20)

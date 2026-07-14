@@ -1,6 +1,6 @@
 import { BEGINNER_WORDS } from './beginner-word-bank.js';
 
-const PAIR_COUNT = 6;
+const PAIR_COUNT = 3;
 const FLIP_BACK_MS = 650;
 const FREQUENT_THRESHOLD = 5;
 const FREQUENT_RANDOM_RANGE = 2;
