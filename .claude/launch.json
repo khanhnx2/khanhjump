@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8241"],
       "port": 8241
+    },
+    {
+      "name": "static2",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8242"],
+      "port": 8242
     }
   ]
 }
