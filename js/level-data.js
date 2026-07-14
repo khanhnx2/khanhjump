@@ -10,10 +10,10 @@ const CLONE_RANGE = 50; // levels 51-100 clone 1-50, mirror-transformed (inverte
 // Ally companion per level range: none (1-20), Mini Nguyên (21-30),
 // Mini Khôi (31-40), Mini Father (41-50). Levels 51-100 reuse companions
 // from their source levels (51-60 → 1-10: none, 61-70 → 11-20: none,
-// 71-80 → 21-30: nguyen, 81-90 → 31-40: khoi, 91-100 → 41-50: father).
+// 71-80 → 21-30: nguyen, 81-90 → 31-40: khoi, 91-100 → 41-50: father) —
+// the level-building loop below already reduces to the source number
+// before calling this, so `number` here is always <= 50.
 export function companionTypeFor(number) {
-  // Map levels > 50 to their source levels
-  if (number > 50) number = ((number - 1) % 50) + 1;
   if (number >= 41) return 'father';
   if (number >= 31) return 'khoi';
   if (number >= 21) return 'nguyen';

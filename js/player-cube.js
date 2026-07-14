@@ -122,13 +122,10 @@ export class PlayerCube {
       ctx.restore();
     }
 
-    // Under the caller's global scale(1,-1) mirror, composing an extra
-    // scale(-1,1) here nets scale(-1,-1) — a true 180° rotation (upside
-    // down AND left-right reversed). A plain rotate(π) would instead
-    // compose to scale(-1,1), an upright horizontal mirror — wrong look.
-    if (inverted) ctx.scale(-1, 1);
-    // Jump-spin direction also reverses under the vertical mirror.
-    ctx.rotate(inverted ? -this.rotation : this.rotation);
+    // Net scale(-1,-1) = true 180° rotation (upside down + left-right
+    // reversed), matching drawBoss/drawCompanion's inverted-gravity treatment.
+    if (inverted) ctx.scale(-1, -1);
+    ctx.rotate(this.rotation);
 
     if (this.flashTimer > 0 && Math.floor(this.flashTimer * 18) % 2 === 0) {
       ctx.globalAlpha = 0.35;
