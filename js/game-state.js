@@ -54,7 +54,7 @@ export class GameState {
     this.levelIndex = Math.max(0, Math.min(levels.length - 1, levelNumber - 1));
     this.level = levels[this.levelIndex];
     this.bossFight = null;
-    this.miniNguyen = this.level.hasMiniNguyen ? new MiniCompanion() : null;
+    this.miniNguyen = this.level.companionType ? new MiniCompanion(this.level.companionType) : null;
     this.player.reset();
     this.elapsedSeconds = 0;
     this.resetLevelObjects();
@@ -117,7 +117,7 @@ export class GameState {
     this.projectiles = [];
     this.bossFight = null;
     this.bossFireTimer = 0;
-    this.miniNguyen = this.level.hasMiniNguyen ? new MiniCompanion() : null;
+    this.miniNguyen = this.level.companionType ? new MiniCompanion(this.level.companionType) : null;
     this.resetLevelObjects();
     this.state = 'playing';
     this.emit('health');
@@ -176,7 +176,7 @@ export class GameState {
     this.ammo = 0;
     this.projectiles = [];
     this.bossFireTimer = BOSS_PLAYER_FIRE_INTERVAL;
-    this.bossFight = new BossFight(this.level.bossSequence, this.player.x, this.miniNguyen, this.level.hasMiniNguyen);
+    this.bossFight = new BossFight(this.level.bossSequence, this.player.x, this.miniNguyen, Boolean(this.level.companionType));
     this.state = 'boss';
     this.emit('bossStart');
   }

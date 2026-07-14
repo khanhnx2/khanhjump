@@ -7,14 +7,15 @@ The start screen includes an About me screen with creator contact information an
 
 ## Levels
 
-- The game has `30` levels.
+- The game has `40` levels.
 - Levels `11-20` reuse the exact map layouts of levels `1-10` (11=1, 12=2, … 20=10) and add a boss fight at the finish line.
 - Levels `21-30` reuse the exact map layouts of levels `1-10` and the boss roster of levels `11-20`, with new companion mechanics (see below).
+- Levels `31-40` mirror levels `21-30` exactly (layouts, boss roster, Mini Black Nguyên add), but the ally companion is upgraded from Mini Nguyên to Mini Khôi (see below).
 - Father, Khôi, and Nguyên each store their own current level.
 - Custom characters also store their own current level.
 - Character name and avatar can be changed from the start screen.
 - New characters can be added, and existing characters can be deleted.
-- Clearing a level unlocks the next level for that character, up to level `30`.
+- Clearing a level unlocks the next level for that character, up to level `40`.
 
 ## Start Gate
 
@@ -94,9 +95,20 @@ The start screen includes an About me screen with creator contact information an
 | 29 | Black Khôi → Big Black Khôi (25 hearts, every 1s) (+ Mini Black Nguyên spawns for each) |
 | 30 | Black Father → Big Black Father (40 hearts, every 0.5s) (+ Mini Black Nguyên spawns for each) |
 
+## Levels 31-40 (Mini Khôi)
+
+- Levels `31-40` are identical to levels `21-30` (layouts, boss sequences per the table above with level 31 = level 21's row, …, 40 = 30's; Mini Black Nguyên add unchanged) except the ally companion is Mini Khôi instead of Mini Nguyên.
+- Mini Khôi behaves exactly like Mini Nguyên (flying trail, obstacle immunity, boss-bullet shielding, obstacle-destroying bullets, permanent death at `0` hearts, fresh spawn on restart) with upgraded stats:
+
+| | Mini Nguyên (21-30) | Mini Khôi (31-40) |
+|---|---|---|
+| Hearts | 20 | 30 |
+| Fire interval | 2.0s | 1.5s |
+| Avatar | Nguyên | Khôi |
+
 ## Win And Lose
 
-- Win when `player.x >= currentLevel.length` (levels 1-10, 21-30), or after defeating every boss (levels 11-20, 21-30).
+- Win when `player.x >= currentLevel.length` (levels 1-10), or after defeating every boss (levels 11-40).
 - Lose only when hearts reach `0`.
 - Colliding with an obstacle removes `1` heart and destroys that obstacle.
 - Flying high into ceiling spikes also removes `1` heart.

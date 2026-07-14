@@ -41,7 +41,17 @@ const BOSS_SEQUENCES = {
   27: ['nguyen', 'khoi', 'father'],
   28: ['nguyen', 'big-nguyen'],
   29: ['khoi', 'big-khoi'],
-  30: ['father', 'big-father']
+  30: ['father', 'big-father'],
+  31: ['nguyen'],
+  32: ['khoi'],
+  33: ['father'],
+  34: ['nguyen', 'khoi'],
+  35: ['nguyen', 'father'],
+  36: ['khoi', 'father'],
+  37: ['nguyen', 'khoi', 'father'],
+  38: ['nguyen', 'big-nguyen'],
+  39: ['khoi', 'big-khoi'],
+  40: ['father', 'big-father']
 };
 
 // Fresh objects per call so a fight can mutate hp without touching level data.

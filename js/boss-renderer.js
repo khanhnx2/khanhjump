@@ -37,8 +37,8 @@ export function drawBoss(ctx, boss, view) {
   ctx.restore();
 }
 
-// Mini Nguyên: the player's own family avatar (no dark tint) with a pulsing
-// gold halo — kept visually distinct from the cyan shield ring on the player.
+// Ally companion: its own family avatar (no dark tint) with a pulsing gold
+// halo — kept visually distinct from the cyan shield ring on the player.
 export function drawCompanion(ctx, companion, view) {
   if (!companion) return;
   const size = TILE * companion.scale;
@@ -57,7 +57,7 @@ export function drawCompanion(ctx, companion, view) {
   ctx.stroke();
   ctx.restore();
 
-  const image = characterImages.nguyen;
+  const image = characterImages[companion.avatar];
   if (image && image.complete && image.naturalWidth > 0) {
     const inset = size * 0.1;
     const imageSize = size - inset * 2;

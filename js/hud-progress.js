@@ -1,8 +1,7 @@
 // DOM-based HUD: progress bar (top center), attempt counter, mute button,
-// boss HP label during boss fights, Mini Nguyên / Mini Black Nguyên HP labels.
+// boss HP label during boss fights, ally companion / Mini Black Nguyên HP labels.
 
 import { BOSS_LABELS } from './boss-level-data.js';
-import { MINI_MAX_HP } from './mini-companion-state.js';
 
 export class Hud {
   constructor(game, audio) {
@@ -76,7 +75,7 @@ export class Hud {
       return;
     }
     this.miniHp.classList.remove('hidden');
-    this.miniHp.textContent = `Mini Nguyên ♥ ${mini.hp}/${MINI_MAX_HP}`;
+    this.miniHp.textContent = `${mini.label} ♥ ${mini.hp}/${mini.maxHp}`;
   }
 
   updateMiniAddHp() {
