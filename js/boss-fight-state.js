@@ -83,14 +83,14 @@ export class BossFight {
     this.miniAdd.fireTimer -= dt;
     if (this.miniAdd.fireTimer <= 0) {
       this.miniAdd.fireTimer += this.miniAdd.fireInterval;
-      this.bossBullets.push({ x: this.miniAdd.x - 0.2, y: 0.5 });
+      this.bossBullets.push({ x: this.miniAdd.x - 0.2, y: 0.5, fromMini: true });
     }
   }
 
   updateMiniNguyen(dt, player) {
     if (!this.miniNguyen || !this.miniNguyen.alive) return;
     const shouldFire = this.miniNguyen.updateBossPosition(dt, player);
-    if (shouldFire) this.playerBullets.push({ x: this.miniNguyen.x + 1, y: 0.5 });
+    if (shouldFire) this.playerBullets.push({ x: this.miniNguyen.x + 1, y: 0.5, fromMini: true });
   }
 
   updateBoss(dt, rng) {
@@ -130,7 +130,12 @@ export class BossFight {
       if (this.miniAdd && this.miniAdd.hp > 0 && bullet.x > this.miniAdd.x && bullet.x < this.miniAdd.x + this.miniAdd.scale) {
         bullet.destroyed = true;
         this.miniAdd.hp -= 1;
-        if (this.miniAdd.hp <= 0) this.miniAdd = null;
+        if (this.miniAdd.hp <= 0) {
+          this.miniAdd = null;
+          // A dead shooter's in-flight bullets vanish with it (matches the
+          // full bossBullets wipe on main-boss defeat).
+          this.bossBullets = this.bossBullets.filter((b) => !b.fromMini);
+        }
         continue;
       }
       if (boss.y < DODGE_BAND_TOP && bullet.x > boss.x && bullet.x < boss.x + boss.scale) {
@@ -147,6 +152,9 @@ export class BossFight {
       if (this.miniNguyen && this.miniNguyen.alive && bullet.x > this.miniNguyen.x && bullet.x < this.miniNguyen.x + this.miniNguyen.scale) {
         bullet.destroyed = true;
         this.miniNguyen.takeDamage(1);
+        if (!this.miniNguyen.alive) {
+          this.playerBullets = this.playerBullets.filter((b) => !b.fromMini);
+        }
         continue;
       }
       if (player.y < DODGE_BAND_TOP && bullet.x > player.x && bullet.x < player.x + 1) {

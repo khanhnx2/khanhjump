@@ -207,7 +207,7 @@ export class GameState {
   updateMiniNguyen(dt) {
     const shouldFire = this.miniNguyen.updateRun(dt, this.player);
     if (shouldFire) {
-      this.projectiles.push({ x: this.miniNguyen.x + 1, y: this.miniNguyen.y + 0.5 });
+      this.projectiles.push({ x: this.miniNguyen.x + 1, y: this.miniNguyen.y + 0.5, fromMini: true });
     }
   }
   get progress() {

@@ -80,11 +80,13 @@ export function drawBossBullets(ctx, bullets, view) {
   for (const bullet of bullets) {
     const sx = view.worldToScreenX(bullet.x);
     const sy = view.worldToScreenY(bullet.y);
-    ctx.fillStyle = '#ff3864';
+    // Mini Black Nguyên's shots render purple so the player can tell the
+    // two incoming bullet sources apart from the boss's red.
+    ctx.fillStyle = bullet.fromMini ? '#b388ff' : '#ff3864';
     ctx.beginPath();
     ctx.arc(sx, sy, TILE * 0.16, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#7a0c2e';
+    ctx.strokeStyle = bullet.fromMini ? '#5e35b1' : '#7a0c2e';
     ctx.lineWidth = 2;
     ctx.stroke();
   }

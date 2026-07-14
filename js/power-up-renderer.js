@@ -28,11 +28,13 @@ export function drawProjectiles(ctx, projectiles, view) {
   for (const projectile of projectiles) {
     const sx = view.worldToScreenX(projectile.x);
     const sy = view.worldToScreenY(projectile.y);
-    ctx.fillStyle = '#ffeb3b';
+    // Companion bullets render cyan so they read differently from the
+    // player's yellow shots flying in the same direction.
+    ctx.fillStyle = projectile.fromMini ? '#7df3ff' : '#ffeb3b';
     ctx.beginPath();
     ctx.arc(sx, sy, TILE * 0.16, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#ff7a00';
+    ctx.strokeStyle = projectile.fromMini ? '#0097b2' : '#ff7a00';
     ctx.lineWidth = 2;
     ctx.stroke();
   }
