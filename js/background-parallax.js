@@ -14,25 +14,38 @@ function hash(n) {
   return s - Math.floor(s);
 }
 
-export function drawBackground(ctx, view) {
-  // Sky gradient
-  const sky = ctx.createLinearGradient(0, 0, 0, view.floorY);
+// Inverted levels move the floor line to the mirrored position (view.height
+// - view.floorY) so it lines up with worldToScreenY's recalibrated groundY
+// reference in main.js — a plain floorY swap alone isn't enough, since sky
+// and silhouettes must also flip which side of that line they occupy.
+export function drawBackground(ctx, view, inverted = false) {
+  const floorLine = inverted ? view.height - view.floorY : view.floorY;
+  const skyTop = inverted ? floorLine : 0;
+  const skyBottom = inverted ? view.height : floorLine;
+  // The point far from the floor line stays dark, the point adjacent to it
+  // (the horizon) stays light — normal: far=skyTop, near=skyBottom;
+  // inverted: far=skyBottom, near=skyTop (sky now hangs below the floor line).
+  const farY = inverted ? skyBottom : skyTop;
+  const nearY = inverted ? skyTop : skyBottom;
+
+  const sky = ctx.createLinearGradient(0, farY, 0, nearY);
   sky.addColorStop(0, '#0b1030');
   sky.addColorStop(1, '#131a52');
   ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, view.width, view.floorY);
+  ctx.fillRect(0, skyTop, view.width, skyBottom - skyTop);
 
   for (const layer of LAYERS) {
-    drawSilhouetteLayer(ctx, view, layer);
+    drawSilhouetteLayer(ctx, view, layer, floorLine, inverted);
   }
 }
 
 // Jagged "mountain" silhouette scrolling slower than the world
-function drawSilhouetteLayer(ctx, view, { speed, color, heightFrac, period, jag }) {
+function drawSilhouetteLayer(ctx, view, { speed, color, heightFrac, period, jag }, floorLine, inverted) {
   const offsetPx = view.cameraX * TILE * speed;
   const stepPx = period * TILE;
-  const baseY = view.floorY;
+  const baseY = floorLine;
   const maxH = view.floorY * heightFrac;
+  const dir = inverted ? 1 : -1; // peaks point into the sky side of the floor line
 
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -44,7 +57,7 @@ function drawSilhouetteLayer(ctx, view, { speed, color, heightFrac, period, jag 
     const peakX = i * stepPx - offsetPx + stepPx / 2;
     const h = maxH * (0.4 + 0.6 * hash(i)) * jag;
     ctx.lineTo(i * stepPx - offsetPx, baseY);
-    ctx.lineTo(peakX, baseY - h);
+    ctx.lineTo(peakX, baseY + dir * h);
   }
   ctx.lineTo(view.width, baseY);
   ctx.closePath();
@@ -52,24 +65,28 @@ function drawSilhouetteLayer(ctx, view, { speed, color, heightFrac, period, jag 
 }
 
 // Floor with scrolling grid lines moving at world speed
-export function drawFloor(ctx, view) {
+export function drawFloor(ctx, view, inverted = false) {
+  const floorLine = inverted ? view.height - view.floorY : view.floorY;
+  const floorTop = inverted ? 0 : floorLine;
+  const floorBottom = inverted ? floorLine : view.height;
+
   ctx.fillStyle = '#141a45';
-  ctx.fillRect(0, view.floorY, view.width, view.height - view.floorY);
+  ctx.fillRect(0, floorTop, view.width, floorBottom - floorTop);
 
   ctx.strokeStyle = '#2a3570';
   ctx.lineWidth = 1;
   const offsetPx = (view.cameraX * TILE) % TILE;
   for (let x = -offsetPx; x < view.width; x += TILE) {
     ctx.beginPath();
-    ctx.moveTo(x, view.floorY);
-    ctx.lineTo(x, view.height);
+    ctx.moveTo(x, floorTop);
+    ctx.lineTo(x, floorBottom);
     ctx.stroke();
   }
 
   ctx.strokeStyle = '#4a55a0';
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(0, view.floorY);
-  ctx.lineTo(view.width, view.floorY);
+  ctx.moveTo(0, floorLine);
+  ctx.lineTo(view.width, floorLine);
   ctx.stroke();
 }

@@ -7,16 +7,17 @@ The start screen includes an About me screen with creator contact information an
 
 ## Levels
 
-- The game has `50` levels.
+- The game has `100` levels.
 - Levels `11-20` reuse the exact map layouts of levels `1-10` (11=1, 12=2, … 20=10) and add a boss fight at the finish line.
 - Levels `21-30` reuse the exact map layouts of levels `1-10` and the boss roster of levels `11-20`, with new companion mechanics (see below).
 - Levels `31-40` mirror levels `21-30` exactly (layouts, boss roster, Mini Black Nguyên add), but the ally companion is upgraded from Mini Nguyên to Mini Khôi (see below).
 - Levels `41-50` mirror levels `31-40` exactly (layouts, boss roster, Mini Black Nguyên add), but the ally companion is upgraded again to Mini Father (see below).
+- Levels `51-100` mirror levels `1-50` exactly (layouts, boss roster, companions — level 51≡1, 61≡11, …, 100≡50) but run on **inverted gravity**: the player runs upside down along the ceiling, and the whole scene renders mirrored (floor at the top of the screen, sky at the bottom). See "Inverted Gravity (Levels 51-100)" below.
 - Father, Khôi, and Nguyên each store their own current level.
 - Custom characters also store their own current level.
 - Character name and avatar can be changed from the start screen.
 - New characters can be added, and existing characters can be deleted.
-- Clearing a level unlocks the next level for that character, up to level `50`.
+- Clearing a level unlocks the next level for that character, up to level `100`.
 
 ## Start Gate
 
@@ -107,9 +108,16 @@ The start screen includes an About me screen with creator contact information an
 | Fire interval | 2.0s | 1.5s | 1.0s |
 | Avatar | Nguyên | Khôi | Father |
 
+## Inverted Gravity (Levels 51-100)
+
+- Levels `51-100` are a full clone of levels `1-50` (layouts, boss roster, all 3 companion tiers) — level 51≡1, 61≡11, 71≡21, 81≡31, 91≡41, 100≡50 — but gravity points toward the ceiling instead of the floor.
+- The player runs upside down along the ceiling; the whole scene renders mirrored (floor band at the top of the screen, sky at the bottom). Boss and companion sprites are also rendered upside down.
+- All obstacles are mirrored to match: a ground spike's mirror is a ceiling-spike (and vice versa) positioned so the hazard still threatens the player at the new floor level; blocks mirror the same way. Physics (jump height, gravity, landing, boss dodge timing, bullet interception) are exactly mirrored — an inverted level plays identically to its source level, just upside down.
+- Wings/fly, shield, gun, and heart pickups all work the same way, just repositioned to the mirrored world.
+
 ## Win And Lose
 
-- Win when `player.x >= currentLevel.length` (levels 1-10), or after defeating every boss (levels 11-50).
+- Win when `player.x >= currentLevel.length` (levels 1-10 and their inverted mirrors 51-60), or after defeating every boss (levels 11-50 and their inverted mirrors 61-100).
 - Lose only when hearts reach `0`.
 - Colliding with an obstacle removes `1` heart and destroys that obstacle.
 - Flying high into ceiling spikes also removes `1` heart.

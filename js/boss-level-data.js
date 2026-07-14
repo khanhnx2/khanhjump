@@ -66,6 +66,8 @@ const BOSS_SEQUENCES = {
 
 // Fresh objects per call so a fight can mutate hp without touching level data.
 export function getBossSequence(levelNumber) {
+  // Levels 51-100 reuse boss sequences from 1-50 via modulo mapping.
+  if (levelNumber > 50) levelNumber = ((levelNumber - 1) % 50) + 1;
   const keys = BOSS_SEQUENCES[levelNumber] || [];
   return keys.map((key) => ({ key, ...BOSS_TYPES[key] }));
 }

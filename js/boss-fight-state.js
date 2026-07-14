@@ -1,10 +1,15 @@
 import { JUMP_VELOCITY, GRAVITY } from './player-cube.js';
+import { WORLD_HEIGHT } from './gravity-context.js';
 
 // End-of-level duel: player locks in place, bosses spawn one at a time from the
 // level's bossSequence. Bullets fly in the ground band [0, 1); an airborne body
 // (bottom at y >= 1) dodges. Player bullets step ~0.73 tiles per capped frame
 // (22 tiles/s at MAX_DT 1/30), boss bullets ~0.37 tiles/frame (11 tiles/s) —
 // both under the 1-tile hitbox width, so no tunneling checks needed.
+// Inverted gravity mirrors the ground band to the top: a grounded body's
+// bottom sits at groundY (4.8), and the mirror of "bottom < 1" is "bottom >
+// WORLD_HEIGHT - 1 - DODGE_BAND_TOP" (3.8), NOT "> WORLD_HEIGHT - DODGE_BAND_TOP" —
+// that off-by-one would make grounded bodies un-hittable/invulnerable.
 export const BOSS_DISTANCE = 6;
 const PLAYER_BULLET_SPEED = 22;
 const BOSS_BULLET_SPEED = 11; // half of PLAYER_BULLET_SPEED, per user request
@@ -16,13 +21,16 @@ const MINI_ADD_SCALE = 0.5;
 const MINI_ADD_OFFSET_X = -1;
 
 export class BossFight {
-  constructor(bossSequence, playerX, miniNguyen = null, hasMiniAdd = false) {
+  constructor(bossSequence, playerX, miniNguyen = null, hasMiniAdd = false, gravity = { skyDir: 1, groundY: 0 }) {
     this.queue = bossSequence.map((boss) => ({ ...boss }));
     this.spawnX = playerX + BOSS_DISTANCE;
     this.boss = null;
     this.miniAdd = null;
     this.miniNguyen = miniNguyen;
     this.hasMiniAdd = hasMiniAdd;
+    this.skyDir = gravity.skyDir;
+    this.groundY = gravity.groundY;
+    this.bulletY = this.skyDir > 0 ? 0.5 : WORLD_HEIGHT - 0.5;
     this.bossBullets = [];
     this.playerBullets = [];
     this.playerHit = false;
@@ -30,6 +38,10 @@ export class BossFight {
     this.defeatedBoss = null;
     this.done = false;
     this.spawnNext();
+  }
+
+  inGroundBand(y) {
+    return this.skyDir > 0 ? y < DODGE_BAND_TOP : y > WORLD_HEIGHT - 1 - DODGE_BAND_TOP;
   }
 
   spawnNext() {
@@ -44,7 +56,7 @@ export class BossFight {
       ...def,
       maxHp: def.hp,
       x: this.spawnX,
-      y: 0,
+      y: this.groundY,
       vy: 0,
       grounded: true,
       fireTimer: def.fireInterval,
@@ -59,13 +71,13 @@ export class BossFight {
           fireInterval: MINI_ADD_FIRE_INTERVAL,
           fireTimer: MINI_ADD_FIRE_INTERVAL,
           x: this.boss.x + MINI_ADD_OFFSET_X,
-          y: 0
+          y: this.groundY
         }
       : null;
   }
 
   shootFromPlayer(player) {
-    this.playerBullets.push({ x: player.x + 1, y: 0.5 });
+    this.playerBullets.push({ x: player.x + 1, y: this.bulletY });
   }
 
   update(dt, player, rng = Math.random) {
@@ -83,39 +95,40 @@ export class BossFight {
     this.miniAdd.fireTimer -= dt;
     if (this.miniAdd.fireTimer <= 0) {
       this.miniAdd.fireTimer += this.miniAdd.fireInterval;
-      this.bossBullets.push({ x: this.miniAdd.x - 0.2, y: 0.5, fromMini: true });
+      this.bossBullets.push({ x: this.miniAdd.x - 0.2, y: this.bulletY, fromMini: true });
     }
   }
 
   updateMiniNguyen(dt, player) {
     if (!this.miniNguyen || !this.miniNguyen.alive) return;
     const shouldFire = this.miniNguyen.updateBossPosition(dt, player);
-    if (shouldFire) this.playerBullets.push({ x: this.miniNguyen.x + 1, y: 0.5, fromMini: true });
+    if (shouldFire) this.playerBullets.push({ x: this.miniNguyen.x + 1, y: this.bulletY, fromMini: true });
   }
 
   updateBoss(dt, rng) {
     const boss = this.boss;
+    const skyDir = this.skyDir;
 
     boss.fireTimer -= dt;
     if (boss.fireTimer <= 0) {
       boss.fireTimer += boss.fireInterval;
-      this.bossBullets.push({ x: boss.x - 0.2, y: 0.5 });
+      this.bossBullets.push({ x: boss.x - 0.2, y: this.bulletY });
     }
 
     boss.hopTimer -= dt;
     if (boss.hopTimer <= 0) {
       boss.hopTimer += HOP_ROLL_INTERVAL;
       if (boss.grounded && Math.floor(rng() * 2) === 1) {
-        boss.vy = JUMP_VELOCITY;
+        boss.vy = skyDir * JUMP_VELOCITY;
         boss.grounded = false;
       }
     }
 
     if (!boss.grounded) {
-      boss.vy -= GRAVITY * dt;
+      boss.vy -= skyDir * GRAVITY * dt;
       boss.y += boss.vy * dt;
-      if (boss.y <= 0) {
-        boss.y = 0;
+      if (skyDir * (boss.y - this.groundY) <= 0) {
+        boss.y = this.groundY;
         boss.vy = 0;
         boss.grounded = true;
       }
@@ -138,7 +151,7 @@ export class BossFight {
         }
         continue;
       }
-      if (boss.y < DODGE_BAND_TOP && bullet.x > boss.x && bullet.x < boss.x + boss.scale) {
+      if (this.inGroundBand(boss.y) && bullet.x > boss.x && bullet.x < boss.x + boss.scale) {
         bullet.destroyed = true;
         boss.hp -= 1;
       }
@@ -157,7 +170,7 @@ export class BossFight {
         }
         continue;
       }
-      if (player.y < DODGE_BAND_TOP && bullet.x > player.x && bullet.x < player.x + 1) {
+      if (this.inGroundBand(player.y) && bullet.x > player.x && bullet.x < player.x + 1) {
         bullet.destroyed = true;
         this.playerHit = true;
       }

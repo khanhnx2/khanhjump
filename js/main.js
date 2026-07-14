@@ -35,10 +35,23 @@ const view = {
   cameraX: 0,
   floorY: 0,
   anchorX: 0,
+  // Set once per frame from the current level's gravity (main.js frame()).
+  inverted: false,
+  groundY: 0,
   worldToScreenX(wx) {
     return (wx - this.cameraX) * TILE + this.anchorX;
   },
+  // Inverted levels can't reuse the normal formula mirrored by a canvas-level
+  // flip: the normal formula is calibrated so world-y=0 lands at floorY, but
+  // an inverted level's "ground" is world-y=groundY (~4.8), not 0 — a naive
+  // canvas flip repositions everything around the WRONG reference point,
+  // leaving the player and obstacles rendering disconnected from the floor
+  // band by several tiles. Recalibrating around groundY here keeps every
+  // existing draw call (which just calls this function) working unchanged.
   worldToScreenY(wy) {
+    if (this.inverted) {
+      return (this.height - this.floorY - this.groundY * TILE) + wy * TILE;
+    }
     return this.floorY - wy * TILE;
   },
   screenToWorldX(sx) {
@@ -148,25 +161,27 @@ game.on('death', () => {
 });
 
 function render() {
-  drawBackground(ctx, view);
-  drawFloor(ctx, view);
+  const inverted = view.inverted;
+
+  drawBackground(ctx, view, inverted);
+  drawFloor(ctx, view, inverted);
   drawPickups(ctx, game.pickups, view);
   drawObstacles(ctx, game.obstacles, view);
   drawProjectiles(ctx, game.projectiles, view);
   drawFinishLine(ctx, game.level.length, view);
 
   if (game.state === 'boss' && game.bossFight) {
-    drawBoss(ctx, game.bossFight.boss, view);
-    if (game.bossFight.miniAdd) drawBoss(ctx, game.bossFight.miniAdd, view);
+    drawBoss(ctx, game.bossFight.boss, view, inverted);
+    if (game.bossFight.miniAdd) drawBoss(ctx, game.bossFight.miniAdd, view, inverted);
     drawBossBullets(ctx, game.bossFight.bossBullets, view);
     drawProjectiles(ctx, game.bossFight.playerBullets, view);
   }
 
   if (game.state !== 'dead') {
-    game.player.draw(ctx, view, game.invincibleTimer > 0);
+    game.player.draw(ctx, view, game.invincibleTimer > 0, inverted);
   }
 
-  if (game.miniNguyen && game.miniNguyen.alive) drawCompanion(ctx, game.miniNguyen, view);
+  if (game.miniNguyen && game.miniNguyen.alive) drawCompanion(ctx, game.miniNguyen, view, inverted);
 
   particles.draw(ctx, view);
 }
@@ -182,6 +197,8 @@ function frame(now) {
   // Shift the camera right during boss fights so the boss (6 tiles ahead,
   // up to 1.5 tiles wide) stays on-screen even on narrow phone viewports.
   view.cameraX = game.player.x + (game.state === 'boss' ? 1.5 : 0);
+  view.inverted = Boolean(game.level.invertedGravity);
+  view.groundY = game.gravity.groundY;
 
   if (game.state === 'playing') {
     particles.emitTrail(dt, game.player);

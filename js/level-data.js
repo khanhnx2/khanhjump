@@ -1,13 +1,19 @@
 // Level data uses tile units. y = 0 is the floor; ceiling spikes use y as top edge.
 
 import { getBossSequence } from './boss-level-data.js';
+import { WORLD_HEIGHT } from './gravity-context.js';
 
-export const LEVEL_COUNT = 50;
+export const LEVEL_COUNT = 100;
 const LAYOUT_COUNT = 10; // levels past 10 reuse layouts 1-10 and add a boss fight
+const CLONE_RANGE = 50; // levels 51-100 clone 1-50, mirror-transformed (inverted gravity)
 
 // Ally companion per level range: none (1-20), Mini Nguyên (21-30),
-// Mini Khôi (31-40), Mini Father (41-50).
-function companionTypeFor(number) {
+// Mini Khôi (31-40), Mini Father (41-50). Levels 51-100 reuse companions
+// from their source levels (51-60 → 1-10: none, 61-70 → 11-20: none,
+// 71-80 → 21-30: nguyen, 81-90 → 31-40: khoi, 91-100 → 41-50: father).
+export function companionTypeFor(number) {
+  // Map levels > 50 to their source levels
+  if (number > 50) number = ((number - 1) % 50) + 1;
   if (number >= 41) return 'father';
   if (number >= 31) return 'khoi';
   if (number >= 21) return 'nguyen';
@@ -65,12 +71,52 @@ const BASE_OBSTACLES = [
   { type: 'spike', x: 358, y: 0 },
 ];
 
+// Mirrors a level-1-50 obstacle across WORLD_HEIGHT for the inverted-gravity
+// clone range: spike/ceiling-spike swap type (their hitboxes hang from
+// opposite edges, so mirroring must reverse which one applies), block keeps
+// its type (only the y anchor moves). See docs: mirrored hitbox interval
+// must equal WORLD_HEIGHT - original interval — spike y=0 (box [0,0.5]) <->
+// ceiling-spike y=WORLD_HEIGHT (box [WORLD_HEIGHT-0.5,WORLD_HEIGHT]).
+function mirrorObstacle(ob) {
+  if (ob.type === 'spike') return { type: 'ceiling-spike', x: ob.x, y: WORLD_HEIGHT - ob.y };
+  if (ob.type === 'ceiling-spike') return { type: 'spike', x: ob.x, y: WORLD_HEIGHT - ob.y };
+  return { type: 'block', x: ob.x, y: WORLD_HEIGHT - ob.y - 1 };
+}
+
+// Pickup body is 1 tile tall, anchored at bottom y — same -1 anchor shift as
+// blocks. NOT `WORLD_HEIGHT - y` (that would let a grounded inverted player
+// auto-collect without jumping, deleting the jump-gated pickup mechanic).
+function mirrorPickup(pickup) {
+  return { ...pickup, y: WORLD_HEIGHT - pickup.y - 1 };
+}
+
+function mirrorLayout(layout) {
+  return {
+    ...layout,
+    obstacles: layout.obstacles.map(mirrorObstacle),
+    pickups: layout.pickups.map(mirrorPickup)
+  };
+}
+
 export const levels = Array.from({ length: LEVEL_COUNT }, (_, index) => {
   const number = index + 1;
+  const inverted = number > CLONE_RANGE;
+  // 51-100 clone 1-50: same boss/companion progression, mirrored physics.
+  const sourceNumber = inverted ? number - CLONE_RANGE : number;
   // Layout repeats every 10 levels; GameState deep-copies obstacles/pickups per
-  // run, so sharing layout arrays between level N and N+10 is safe.
+  // run, so sharing layout arrays between level N and N+10 is safe. This
+  // formula already yields the correct source layout for numbers > 50 too
+  // (LAYOUT_COUNT=10 divides CLONE_RANGE=50 evenly), so no special-casing
+  // is needed here — only the mirror transform below is range-dependent.
   const layout = buildLevel(((number - 1) % LAYOUT_COUNT) + 1);
-  return { ...layout, number, bossSequence: getBossSequence(number), companionType: companionTypeFor(number) };
+  const finalLayout = inverted ? mirrorLayout(layout) : layout;
+  return {
+    ...finalLayout,
+    number,
+    bossSequence: getBossSequence(sourceNumber),
+    companionType: companionTypeFor(sourceNumber),
+    invertedGravity: inverted
+  };
 });
 export const level = levels[0];
 

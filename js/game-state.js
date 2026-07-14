@@ -4,6 +4,7 @@ import { resolveCollisions } from './collision-detection.js';
 import { findProjectileHit } from './projectile-collision.js';
 import { BossFight } from './boss-fight-state.js';
 import { MiniCompanion } from './mini-companion-state.js';
+import { gravityContextFor } from './gravity-context.js';
 
 // State machine: ready → playing → dead/win → playing
 const FLY_SECONDS = 3;
@@ -40,6 +41,7 @@ export class GameState {
     this.bossFight = null;
     this.bossFireTimer = 0;
     this.miniNguyen = null;
+    this.gravity = gravityContextFor(false);
     this.listeners = { damage: [], death: [], restart: [], win: [], start: [], powerup: [], health: [], matchRequired: [], bossStart: [], bossDefeated: [] };
     this.resetLevelObjects();
     this.bindInput();
@@ -55,6 +57,10 @@ export class GameState {
     this.level = levels[this.levelIndex];
     this.bossFight = null;
     this.miniNguyen = this.level.companionType ? new MiniCompanion(this.level.companionType) : null;
+    this.gravity = gravityContextFor(this.level.invertedGravity);
+    // setGravity BEFORE reset(): reset() snaps to the current groundY, so the
+    // player would spawn at the wrong ground for this level otherwise.
+    this.player.setGravity(this.gravity);
     this.player.reset();
     this.elapsedSeconds = 0;
     this.resetLevelObjects();
@@ -107,6 +113,8 @@ export class GameState {
     }
   }
   restart() {
+    // setGravity BEFORE reset() — same ordering requirement as setLevel().
+    this.player.setGravity(this.gravity);
     this.player.reset();
     this.elapsedSeconds = 0;
     this.ammo = 0;
@@ -154,7 +162,7 @@ export class GameState {
     this.collectPickups();
     this.updateProjectiles(dt);
     if (this.miniNguyen && this.miniNguyen.alive) this.updateMiniNguyen(dt);
-    const hitObstacle = resolveCollisions(this.player, prevBottom, this.obstacles);
+    const hitObstacle = resolveCollisions(this.player, prevBottom, this.obstacles, this.gravity);
     if (hitObstacle) {
       if (this.invincibleTimer > 0) this.destroyObstacle(hitObstacle);
       else this.takeDamage(hitObstacle);
@@ -176,7 +184,7 @@ export class GameState {
     this.ammo = 0;
     this.projectiles = [];
     this.bossFireTimer = BOSS_PLAYER_FIRE_INTERVAL;
-    this.bossFight = new BossFight(this.level.bossSequence, this.player.x, this.miniNguyen, Boolean(this.level.companionType));
+    this.bossFight = new BossFight(this.level.bossSequence, this.player.x, this.miniNguyen, Boolean(this.level.companionType), this.gravity);
     this.state = 'boss';
     this.emit('bossStart');
   }

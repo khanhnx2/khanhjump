@@ -18,12 +18,24 @@ export function setPlayerFace(src) {
 
 export class PlayerCube {
   constructor() {
+    // Gravity direction defaults must be assigned before reset() runs
+    // (reset() reads groundY) since the constructor calls reset() immediately.
+    this.skyDir = 1;
+    this.groundY = 0;
     this.reset();
+  }
+
+  // Callers must invoke this BEFORE reset() (setLevel/restart) — reset()
+  // snaps to the current groundY, so calling it first would spawn the
+  // player at the wrong ground for the level about to start.
+  setGravity({ skyDir, groundY }) {
+    this.skyDir = skyDir;
+    this.groundY = groundY;
   }
 
   reset() {
     this.x = 0;          // world x in tiles (cube left edge)
-    this.y = 0;          // height of cube bottom above floor, in tiles
+    this.y = this.groundY; // height of cube bottom above floor, in tiles
     this.vy = 0;         // vertical velocity, tiles/s (positive = up)
     this.grounded = true;
     this.rotation = 0;   // radians, visual only
@@ -32,7 +44,7 @@ export class PlayerCube {
 
   jump() {
     if (this.grounded) {
-      this.vy = JUMP_VELOCITY;
+      this.vy = this.skyDir * JUMP_VELOCITY;
       this.grounded = false;
     }
   }
@@ -48,17 +60,22 @@ export class PlayerCube {
     this.flashTimer = Math.max(0, this.flashTimer - dt);
 
     if (canFly && inputHeld) {
-      this.vy = Math.min(FLY_MAX_UP, this.vy + FLY_ACCELERATION * dt);
+      this.vy += this.skyDir * FLY_ACCELERATION * dt;
     } else {
-      this.vy -= GRAVITY * dt;
+      this.vy -= this.skyDir * GRAVITY * dt;
     }
-    if (canFly) this.vy = Math.max(FLY_MAX_DOWN, Math.min(FLY_MAX_UP, this.vy));
+    if (canFly) {
+      // Clamp interval endpoints swap under inverted gravity — NOT a plain
+      // sign flip. b1/b2 order flips too, so take min/max of both.
+      const b1 = this.skyDir * FLY_MAX_UP, b2 = this.skyDir * FLY_MAX_DOWN;
+      this.vy = Math.max(Math.min(b1, b2), Math.min(Math.max(b1, b2), this.vy));
+    }
 
     this.y += this.vy * dt;
 
-    // Floor is always standable at y = 0
-    if (this.y <= 0) {
-      this.y = 0;
+    // Grounded when the body crosses groundY from the sky side.
+    if (this.skyDir * (this.y - this.groundY) <= 0) {
+      this.y = this.groundY;
       this.vy = 0;
       this.grounded = true;
     } else if (this.vy !== 0) {
@@ -81,13 +98,18 @@ export class PlayerCube {
     }
   }
 
-  draw(ctx, view, shieldActive = false) {
+  draw(ctx, view, shieldActive = false, inverted = false) {
     const sx = view.worldToScreenX(this.x);
+    // Body spans world-y [this.y, this.y+1]; deriving the center from both
+    // edges via worldToScreenY (rather than a hardcoded `sy - size/2`)
+    // keeps this correct under inverted gravity's recalibrated (increasing)
+    // mapping, where the body extends the opposite screen direction.
     const sy = view.worldToScreenY(this.y);
+    const syTop = view.worldToScreenY(this.y + 1);
     const size = TILE;
 
     ctx.save();
-    ctx.translate(sx + size / 2, sy - size / 2);
+    ctx.translate(sx + size / 2, (sy + syTop) / 2);
 
     if (shieldActive) {
       const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 120);
@@ -100,7 +122,13 @@ export class PlayerCube {
       ctx.restore();
     }
 
-    ctx.rotate(this.rotation);
+    // Under the caller's global scale(1,-1) mirror, composing an extra
+    // scale(-1,1) here nets scale(-1,-1) — a true 180° rotation (upside
+    // down AND left-right reversed). A plain rotate(π) would instead
+    // compose to scale(-1,1), an upright horizontal mirror — wrong look.
+    if (inverted) ctx.scale(-1, 1);
+    // Jump-spin direction also reverses under the vertical mirror.
+    ctx.rotate(inverted ? -this.rotation : this.rotation);
 
     if (this.flashTimer > 0 && Math.floor(this.flashTimer * 18) % 2 === 0) {
       ctx.globalAlpha = 0.35;

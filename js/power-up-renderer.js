@@ -15,11 +15,16 @@ export function drawPickups(ctx, pickups, view) {
     if (pickup.x > maxX) break;
 
     const sx = view.worldToScreenX(pickup.x);
+    // Body spans world-y [pickup.y, pickup.y+1]; deriving the center from
+    // both edges (rather than a hardcoded `sy - TILE/2`) keeps this correct
+    // under inverted gravity's recalibrated (increasing) mapping.
     const sy = view.worldToScreenY(pickup.y);
-    if (pickup.type === 'wings') drawWings(ctx, sx, sy);
-    if (pickup.type === 'gun') drawGun(ctx, sx, sy);
-    if (pickup.type === 'shield') drawShield(ctx, sx, sy);
-    if (characterImages[pickup.type]) drawCharacter(ctx, sx, sy, characterImages[pickup.type]);
+    const syTop = view.worldToScreenY(pickup.y + 1);
+    const cy = (sy + syTop) / 2;
+    if (pickup.type === 'wings') drawWings(ctx, sx, cy);
+    if (pickup.type === 'gun') drawGun(ctx, sx, cy);
+    if (pickup.type === 'shield') drawShield(ctx, sx, cy);
+    if (characterImages[pickup.type]) drawCharacter(ctx, sx, cy, characterImages[pickup.type]);
   }
 }
 
@@ -41,9 +46,9 @@ export function drawProjectiles(ctx, projectiles, view) {
   ctx.restore();
 }
 
-function drawWings(ctx, sx, sy) {
+function drawWings(ctx, sx, cy) {
   ctx.save();
-  ctx.translate(sx + TILE / 2, sy - TILE / 2);
+  ctx.translate(sx + TILE / 2, cy);
   ctx.fillStyle = '#ffffff';
   ctx.strokeStyle = '#76d7ff';
   ctx.lineWidth = 2;
@@ -62,9 +67,9 @@ function drawWing(ctx, side) {
   ctx.stroke();
 }
 
-function drawGun(ctx, sx, sy) {
+function drawGun(ctx, sx, cy) {
   ctx.save();
-  ctx.translate(sx + TILE / 2, sy - TILE / 2);
+  ctx.translate(sx + TILE / 2, cy);
   ctx.fillStyle = '#374151';
   ctx.fillRect(-16, -7, 24, 12);
   ctx.fillRect(6, -4, 16, 6);
@@ -74,9 +79,9 @@ function drawGun(ctx, sx, sy) {
   ctx.restore();
 }
 
-function drawShield(ctx, sx, sy) {
+function drawShield(ctx, sx, cy) {
   ctx.save();
-  ctx.translate(sx + TILE / 2, sy - TILE / 2);
+  ctx.translate(sx + TILE / 2, cy);
   ctx.beginPath();
   ctx.moveTo(0, -16);
   ctx.lineTo(14, -10);
@@ -97,9 +102,9 @@ function drawShield(ctx, sx, sy) {
   ctx.restore();
 }
 
-function drawCharacter(ctx, sx, sy, image) {
+function drawCharacter(ctx, sx, cy, image) {
   ctx.save();
-  ctx.translate(sx + TILE / 2, sy - TILE / 2);
+  ctx.translate(sx + TILE / 2, cy);
   ctx.fillStyle = '#00e5ff';
   ctx.fillRect(-TILE * 0.38, -TILE * 0.38, TILE * 0.76, TILE * 0.76);
   if (image.complete && image.naturalWidth > 0) {

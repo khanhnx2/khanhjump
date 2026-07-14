@@ -25,6 +25,7 @@ const APP_SHELL = [
   './js/character-level-progress.js',
   './js/collision-detection.js',
   './js/game-state.js',
+  './js/gravity-context.js',
   './js/boss-level-data.js',
   './js/boss-fight-state.js',
   './js/boss-renderer.js',

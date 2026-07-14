@@ -42,7 +42,9 @@ export function obstacleOverlap(x, y, obstacles) {
 // Returns the hit obstacle or null. May mutate player (snap-landing on block tops).
 // prevBottom = player.y on the previous frame, used to disambiguate
 // "was above the block and fell onto it" (land) from "ran into its side" (death).
-export function resolveCollisions(player, prevBottom, obstacles) {
+// gravity = { skyDir, groundY } — defaults to normal gravity for existing callers.
+export function resolveCollisions(player, prevBottom, obstacles, gravity = { skyDir: 1, groundY: 0 }) {
+  const { skyDir } = gravity;
   for (const ob of obstacles) {
     // Obstacles are sorted by x; skip far-away ones cheaply
     if (ob.x + 1 < player.x - 1) continue;
@@ -61,12 +63,16 @@ export function resolveCollisions(player, prevBottom, obstacles) {
     } else if (ob.type === 'block') {
       if (!aabbOverlap(player.x, player.y, 1, 1, ob.x, ob.y, 1, 1)) continue;
 
-      const blockTop = ob.y + 1;
-      const falling = player.vy <= 0;
-      const wasAbove = prevBottom >= blockTop - LAND_TOLERANCE;
+      // Landing surface: the interaction-facing edge of the block. Normal
+      // gravity lands on top (ob.y + 1); inverted gravity lands on the
+      // underside (ob.y - 1) since the player's body-bottom sits one tile
+      // below the block there.
+      const landY = skyDir > 0 ? ob.y + 1 : ob.y - 1;
+      const falling = skyDir * player.vy <= 0;
+      const wasAbove = skyDir * (prevBottom - landY) >= -LAND_TOLERANCE;
 
       if (falling && wasAbove) {
-        player.y = blockTop;
+        player.y = landY;
         player.vy = 0;
         player.grounded = true;
       } else {
